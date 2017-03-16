@@ -6,6 +6,10 @@ const unzip = require('../utils/unzip');
 const path = require('path');
 const fs = require('fs');
 const rimraf = require('../utils/rimraf');
+const webdriverio = require('webdriverio');
+const options = { desiredCapabilities: { browserName: 'chrome' } };
+const client = webdriverio.remote(options);
+const studio = require('../utils/studio');
 
 class Template {
 
@@ -132,7 +136,34 @@ class Template {
   }
 
   createCredBundle() {
-    throw new Error('createCredBundle not implemented yet');
+    if (this.buildPlatform !== 'ios') {
+      throw new Error('createCredBundle only implemented for iOS');
+    }
+    return studio.init(client)
+      .url(`${config.host}/#projects/${this.project.guid}/apps/${this.clientApp.guid}/credentials`)
+      .then(() => (studio.login(client, config.username, config.password)))
+      .waitForVisible('#new-bundle-btn')
+      .click('#new-bundle-btn')
+      .waitForVisible('.platform-selector [data-id="ios"]')
+      .click('.platform-selector [data-id="ios"]')
+      .waitForVisible('#bundle-name')
+      .setValue('#bundle-name', config.prefix + new Date().getTime())
+      .waitForVisible('#type')
+      .selectByValue('#type', this.buildType)
+      .waitForVisible('#private_key')
+      .chooseFile('#private_key', path.resolve(__dirname, '..', config.ios[this.buildType].p12))
+      .pause(2000)
+      .waitForVisible('#cert')
+      .chooseFile('#cert', path.resolve(__dirname, '..', config.ios[this.buildType].cer))
+      .pause(2000)
+      .waitForVisible('#prov_profile')
+      .chooseFile('#prov_profile', path.resolve(__dirname, '..', config.ios[this.buildType].provision))
+      .pause(2000)
+      .waitForVisible('.btn-submit')
+      .click('.btn-submit')
+      .pause(5000)
+      .end()
+      .then(this.prepareCredBundle);
   }
 
   buildClientApp() {
@@ -146,8 +177,8 @@ class Template {
         this.environment,
         this.buildPlatform,
         this.buildType,
-        config.iOS.keyPassword,
-        config.iOS.certPassword,
+        config.ios[this.buildType].keyPassword,
+        config.ios[this.buildType].certPassword,
         'true',
         this.credBundle.id,
         '0.0.1'
