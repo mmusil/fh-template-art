@@ -44,5 +44,8 @@
     "arrow-body-style": ["error", "as-needed"],
     "generator-star-spacing": ["error", "after"],
     "require-yield": "error"
+  },
+  "globals": {
+    "step": true
   }
 }

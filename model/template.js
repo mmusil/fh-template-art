@@ -69,40 +69,44 @@ class Template {
     this.clientApp = this.project.apps.find(app => (app.title === this.clientAppName));
   }
 
-  prepareProject(projects) {
-    const matchingProjects = projects.filter(project => {
-      const templateMatch = project.jsonTemplateId === this.projectTemplateId;
-      const prefixMatch = project.title.startsWith(config.prefix);
-      return templateMatch && prefixMatch;
-    });
-    if (matchingProjects.length === 0) {
-      this.environment = config.environment;
-      return this.createProject()
-        .then(this.deployCloudApp);
-    }
-    return matchingProjects.reduce((p, proj) => (
-      p.then(() => (fhc.projectRead(proj.guid).then(full => {
-        proj.apps = full.apps;
-      })))
-    ), Promise.resolve())
-      .then(() => {
-        const runningProj = matchingProjects.find(project => {
-          const cloudApp = project.apps.find(app => (app.type === 'cloud_nodejs'));
-          for (const env in cloudApp.runtime) {
-            if (cloudApp.runtime.hasOwnProperty(env) && cloudApp.runtime[env]) {
-              this.environment = env;
-            }
-          }
-          return this.environment;
+  prepareProject() {
+    return fhc.projectsListNoApps()
+      .then(projects => {
+        const matchingProjects = projects.filter(project => {
+          const templateMatch = project.jsonTemplateId === this.projectTemplateId;
+          const prefixMatch = project.title.startsWith(config.prefix);
+          return templateMatch && prefixMatch;
         });
-        if (!runningProj) {
+        if (matchingProjects.length === 0) {
           this.environment = config.environment;
-          this.project = matchingProjects[0];
-          return this.deployCloudApp();
+          return this.createProject()
+            .then(this.deployCloudApp);
         }
-        this.cloudApp = runningProj.apps.find(app => (app.type === 'cloud_nodejs'));
-        this.project = runningProj;
-      });
+        return matchingProjects.reduce((p, proj) => (
+          p.then(() => (fhc.projectRead(proj.guid).then(full => {
+            proj.apps = full.apps;
+          })))
+        ), Promise.resolve())
+          .then(() => {
+            const runningProj = matchingProjects.find(project => {
+              const cloudApp = project.apps.find(app => (app.type === 'cloud_nodejs'));
+              for (const env in cloudApp.runtime) {
+                if (cloudApp.runtime.hasOwnProperty(env) && cloudApp.runtime[env]) {
+                  this.environment = env;
+                }
+              }
+              return this.environment;
+            });
+            if (!runningProj) {
+              this.environment = config.environment;
+              this.project = matchingProjects[0];
+              return this.deployCloudApp();
+            }
+            this.cloudApp = runningProj.apps.find(app => (app.type === 'cloud_nodejs'));
+            this.project = runningProj;
+          });
+      })
+      .then(this.findClientApp);
   }
 
   createProject() {

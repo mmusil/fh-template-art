@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Red Hat Mobile Aplication platform - Client Apps Acceptance & Regression Tests",
   "scripts": {
-    "start": "mocha",
+    "start": "mocha --require mocha-steps",
     "prestart": "selenium-standalone install --config=config/selenium.js &>/dev/null && selenium-standalone start --config=config/selenium.js &>/dev/null &",
     "poststart": "lsof -i tcp:4444 | grep LISTEN | awk '{print $2}' | xargs kill"
   },
@@ -15,6 +15,7 @@
     "extract-zip": "^1.6.0",
     "fh-fhc": "http://npm.skunkhenry.com/fh-fhc/-/fh-fhc-2.17.3-577.tgz",
     "mocha": "^3.2.0",
+    "mocha-steps": "^1.0.2",
     "plist": "^2.0.1",
     "promisify-node": "^0.4.0",
     "rimraf": "^2.6.1",
