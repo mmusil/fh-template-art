@@ -4,6 +4,8 @@ const fhc = require('../utils/fhc');
 const config = require('../config/config');
 const unzip = require('../utils/unzip');
 const path = require('path');
+const fs = require('fs');
+const rimraf = require('../utils/rimraf');
 
 class Template {
 
@@ -134,6 +136,7 @@ class Template {
   }
 
   buildClientApp() {
+    const tempFolder = path.resolve(__dirname, '../temp');
     let buildPromise;
     if (this.buildPlatform === 'ios') {
       buildPromise = fhc.build(
@@ -155,7 +158,18 @@ class Template {
     return buildPromise
       .then(build => {
         this.build = build;
-        return unzip(path.resolve(__dirname, '..', build[1].download.file))
+        this.buildZip = path.resolve(__dirname, '..', build[1].download.file);
+      })
+      .then(() => (rimraf(tempFolder)))
+      .then(() => (fs.mkdirSync(tempFolder)))
+      .then(() => (unzip(this.buildZip, tempFolder)))
+      .then(() => {
+        const appfile = fs.readdirSync(tempFolder)[0];
+        const ext = path.extname(appfile);
+        const buildId = new Date().getTime();
+        this.buildFile = path.resolve(__dirname, `../builds/${buildId}${ext}`);
+        fs.unlinkSync(this.buildZip);
+        fs.renameSync(path.resolve(tempFolder, appfile), this.buildFile);
       });
   }
 
