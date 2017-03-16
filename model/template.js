@@ -211,7 +211,16 @@ class Template {
         this.connection.tag
       );
     } else {
-      buildPromise = Promise.reject('only ios build so far');
+      buildPromise = fhc.buildAndroid(
+        this.project.guid,
+        this.clientApp.guid,
+        this.cloudApp.guid,
+        this.environment,
+        this.buildPlatform,
+        this.buildType,
+        'true',
+        this.connection.tag
+      );
     }
     return buildPromise
       .then(build => {
@@ -230,7 +239,7 @@ class Template {
         if (!fs.existsSync(buildsFolder)) {
           fs.mkdirSync(buildsFolder);
         }
-        fs.unlinkSync(this.buildZip);
+       // fs.unlinkSync(this.buildZip);
         fs.renameSync(path.resolve(tempFolder, appfile), this.buildFile);
       });
   }

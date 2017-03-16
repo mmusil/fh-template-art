@@ -242,6 +242,27 @@ function build(projectId, clientAppId, cloudAppId, environment, destination, con
   });
 }
 
+function buildAndroid(projectId, clientAppId, cloudAppId, environment, destination, config, download, tag) {
+  return new Promise(function(resolve, reject) {
+    fh.build({_: [
+      `project=${projectId}`,
+      `app=${clientAppId}`,
+      `cloud_app=${cloudAppId}`,
+      `environment=${environment}`,
+      `destination=${destination}`,
+      `config=${config}`,
+      `download=${download}`,
+      `tag=${tag}`
+    ]}, function(error, res) {
+      if (error) {
+        return reject(error);
+      }
+
+      resolve(res);
+    });
+  });
+}
+
 function credentialsList() {
   return new Promise(function(resolve, reject) {
     fh.credentials({_:['list']}, function(error, res) {
@@ -272,5 +293,6 @@ module.exports = {
   serviceCreate: serviceCreate,
   servicesList: servicesList,
   build: build,
+  buildAndroid: buildAndroid,
   credentialsList: credentialsList
 };
