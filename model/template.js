@@ -23,6 +23,7 @@ class Template {
     this.cloudDeployTries = 0;
 
     this.prepare = this.prepare.bind(this);
+    this.prepareConnection = this.prepareConnection.bind(this);
     this.findClientApp = this.findClientApp.bind(this);
     this.prepareProject = this.prepareProject.bind(this);
     this.createProject = this.createProject.bind(this);
@@ -38,8 +39,30 @@ class Template {
       .then(fhc.projectsListNoApps)
       .then(this.prepareProject)
       .then(this.findClientApp)
+      .then(this.prepareConnection)
       .then(this.prepareCredBundle)
       .then(this.buildClientApp);
+  }
+
+  prepareConnection() {
+    return fhc.connectionsList(this.project.guid)
+      .then(connections => (
+        connections.find(connection => (
+          connection.clientApp === this.clientApp.guid &&
+          connection.environment === this.environment
+        ))
+      ))
+      .then(connection => (
+        fhc.connectionUpdate(
+          this.project.guid,
+          connection.guid,
+          this.cloudApp.guid,
+          this.environment
+        )
+      ))
+      .then(connection => {
+        this.connection = connection;
+      });
   }
 
   findClientApp() {
@@ -181,7 +204,7 @@ class Template {
         config.ios[this.buildType].certPassword,
         'true',
         this.credBundle.id,
-        '0.0.1'
+        this.connection.tag
       );
     } else {
       buildPromise = Promise.reject('only ios build so far');
@@ -198,7 +221,11 @@ class Template {
         const appfile = fs.readdirSync(tempFolder)[0];
         const ext = path.extname(appfile);
         const buildId = new Date().getTime();
-        this.buildFile = path.resolve(__dirname, `../builds/${buildId}${ext}`);
+        const buildsFolder = path.resolve(__dirname, `../builds`);
+        this.buildFile = path.resolve(buildsFolder, `${buildId}${ext}`);
+        if (!fs.existsSync(buildsFolder)) {
+          fs.mkdirSync(buildsFolder);
+        }
         fs.unlinkSync(this.buildZip);
         fs.renameSync(path.resolve(tempFolder, appfile), this.buildFile);
       });
