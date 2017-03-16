@@ -13,6 +13,13 @@ const config = {
     deviceName: 'iPhone 7',
     xcodeOrgId: '75B468G5L7',
     xcodeSigningId: 'iPhone Developer'
+  },
+  android: {
+    browserName: '',
+    'appium-version': '1.6',
+    platformName: 'Android',
+    platformVersion: '7.0',
+    deviceName: 'Android Emulator',
   }
 };
 
