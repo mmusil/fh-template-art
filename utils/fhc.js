@@ -218,7 +218,7 @@ function servicesList() {
   });
 }
 
-function build(projectId, clientAppId, cloudAppId, environment, destination, config, keypass, certpass, download, bundleId, tag) {
+function buildIOS(projectId, clientAppId, cloudAppId, environment, destination, config, keypass, certpass, download, bundleId, tag) {
   return new Promise(function(resolve, reject) {
     fh.build({_: [
       `project=${projectId}`,
@@ -242,7 +242,7 @@ function build(projectId, clientAppId, cloudAppId, environment, destination, con
   });
 }
 
-function buildAndroid(projectId, clientAppId, cloudAppId, environment, destination, config, download, tag) {
+function buildAndroidDebug(projectId, clientAppId, cloudAppId, environment, destination, config, download, tag) {
   return new Promise(function(resolve, reject) {
     fh.build({_: [
       `project=${projectId}`,
@@ -292,7 +292,7 @@ module.exports = {
   environmentRead: environmentRead,
   serviceCreate: serviceCreate,
   servicesList: servicesList,
-  build: build,
-  buildAndroid: buildAndroid,
+  buildIOS: buildIOS,
+  buildAndroidDebug: buildAndroidDebug,
   credentialsList: credentialsList
 };
