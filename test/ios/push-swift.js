@@ -11,7 +11,7 @@ function test() {
 
   step('should enable push', function() {
     return self.driver
-      .sleep(5000);
+      .acceptAlert();
   });
 
   step('should send notification', function() {

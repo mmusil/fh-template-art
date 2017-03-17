@@ -59,13 +59,10 @@ class IOSClientApp extends ClientApp {
   }
 
   createCredBundle() {
-    const credentials = this.push ? config.ios.push[this.buildType] : config.ios[this.buildType];
     this.credentials = {
-      key: path.resolve(__dirname, '..', credentials.p12),
-      cer: path.resolve(__dirname, '..', credentials.cer),
-      prov: path.resolve(__dirname, '..', credentials.provision),
-      keyPassword: credentials.keyPassword,
-      certPassword: credentials.certPassword
+      key: path.resolve(__dirname, '..', this.credConfig.key),
+      cer: path.resolve(__dirname, '..', this.credConfig.cer),
+      prov: path.resolve(__dirname, '..', this.credConfig.provision)
     };
     return studio.ios.createCredBundle(this)
       .then(this.prepareCredBundle);
@@ -80,8 +77,8 @@ class IOSClientApp extends ClientApp {
         this.environment,
         this.buildPlatform,
         this.buildType,
-        this.credentials.keyPassword,
-        this.credentials.certPassword,
+        this.credConfig.keyPassword,
+        this.credConfig.certPassword,
         'true',
         this.credBundle.id,
         this.connection.tag

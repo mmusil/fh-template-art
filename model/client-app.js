@@ -71,6 +71,8 @@ class ClientApp {
   }
 
   prepareEnvironment() {
+    this.credConfig = this.push ? config[this.buildPlatform].push[this.buildType] : config[this.buildPlatform][this.buildType];
+
     return this.prepareProject()
       .then(this.prepareConnection)
       .then(() => {
@@ -87,7 +89,10 @@ class ClientApp {
 
   prepareConnection() {
     return fhc.connectionsList(this.project.guid)
-      .then(connections => (connections.find(connection => (connection.clientApp === this.clientApp.guid))))
+      .then(connections => (connections.find(connection => (
+        connection.clientApp === this.clientApp.guid &&
+        connection.status === 'ACTIVE'
+      ))))
       .then(connection => (
         fhc.connectionUpdate(
           this.project.guid,
@@ -152,11 +157,15 @@ class ClientApp {
   }
 
   createProject() {
+    const projectName = config.prefix + new Date().getTime();
+    if (this.projectTemplateId === 'hello_world_project') {
+      return studio.createHelloWorldProject(projectName)
+        .then(this.prepareProject);
+    }
     if (this.projCreateTries >= config.retries) {
       throw new Error('Can not create project');
     }
     this.projCreateTries += 1;
-    const projectName = config.prefix + new Date().getTime();
     return fhc.projectCreate(projectName, this.projectTemplateId)
       .then(project => {
         this.project = project;

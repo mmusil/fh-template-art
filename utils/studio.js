@@ -53,7 +53,7 @@ function init() {
   return client
     .init()
     .setViewportSize({ width: 1024, height: 768 })
-    .timeouts('implicit', 20000);
+    .timeouts('implicit', 60000);
 }
 
 function enablePushIOS(clientApp) {
@@ -80,14 +80,14 @@ function enablePushIOS(clientApp) {
             .pause(3000)
             .waitForVisible('#textInput-modal-markup')
             .setValue('#textInput-modal-markup', 'ios')
-            .then(() => (setupPushIOS(clientApp.credBundle.key)))
+            .then(() => (setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password)))
             .waitForVisible('.modal-footer button.btn-primary')
             .click('.modal-footer button.btn-primary')
             .pause(3000);
         } else {
           return client
             .click('#ups-app-detail-root button')
-            .then(() => (setupPushIOS(clientApp.credBundle.key)))
+            .then(() => (setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password)))
             .waitForVisible('#enablePush')
             .click('#enablePush');
         }
@@ -105,8 +105,7 @@ function enablePushIOS(clientApp) {
       .end();
 }
 
-function setupPushIOS(p12) {
-  console.log(p12);
+function setupPushIOS(p12, pass) {
   return client
     .waitForVisible('.ups-variant-ios')
     .click('.ups-variant-ios')
@@ -115,7 +114,7 @@ function setupPushIOS(p12) {
     .waitForVisible('#iosType2')
     .click('#iosType2')
     .waitForVisible('#iosPassphrase')
-    .setValue('#iosPassphrase', config.ios.push.p12Password);
+    .setValue('#iosPassphrase', pass);
 }
 
 function createCredBundleIOS(clientApp) {
@@ -127,7 +126,7 @@ function createCredBundleIOS(clientApp) {
     .waitForVisible('.platform-selector [data-id="ios"]')
     .click('.platform-selector [data-id="ios"]')
     .waitForVisible('#bundle-name')
-    .setValue('#bundle-name', config.prefix + (clientApp.push ? 'push-' : '') + new Date().getTime())
+    .setValue('#bundle-name', config.prefix + (clientApp.push ? 'push-' : 'normal-') + new Date().getTime())
     .waitForVisible('#type')
     .selectByValue('#type', clientApp.buildType)
     .waitForVisible('#private_key')
@@ -148,7 +147,7 @@ function createCredBundleIOS(clientApp) {
 function sendPushNotification(clientApp) {
   return init(client)
     .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
-    .then(() => (login(client, config.username, config.password)))
+    .then(() => (login(config.username, config.password)))
     .then(waitForDeviceRegistered)
     .waitForVisible('#send-notification-btn')
     .click('#send-notification-btn')
@@ -173,6 +172,33 @@ function waitForDeviceRegistered() {
     });
 }
 
+function createHelloWorldProject(name) {
+  return init(client)
+    .url(`${config.host}/#projects/new`)
+    .then(() => (login(config.username, config.password)))
+    .waitForVisible('.search-query')
+    .setValue('.search-query', 'hello')
+    .waitForVisible('.choose-template')
+    .click('.choose-template')
+    .pause(2000)
+    .waitForVisible('.template-name')
+    .setValue('.template-name', name)
+    .moveToObject('#app-template-helloworld_native_android_gradle_client')
+    .waitForVisible('#app-template-native_ios_swift_helloworld_app .include-app')
+    .click('#app-template-native_ios_swift_helloworld_app .include-app')
+    .waitForVisible('#app-template-native_ios_objectivec_helloworld_app .include-app')
+    .click('#app-template-native_ios_objectivec_helloworld_app .include-app')
+    .waitForVisible('#app-template-helloworld_native_android_gradle_client .include-app')
+    .click('#app-template-helloworld_native_android_gradle_client .include-app')
+    .moveToObject('.template-selector-footer')
+    .waitForVisible('.create-button')
+    .click('.create-button')
+    .waitForVisible('.bar-success')
+    .waitForVisible('.finish')
+    .click('.finish')
+    .end();
+}
+
 module.exports = {
   login: login,
   selectEnvironment: selectEnvironment,
@@ -183,5 +209,6 @@ module.exports = {
     enablePush: enablePushIOS,
     createCredBundle: createCredBundleIOS
   },
-  sendPushNotification: sendPushNotification
+  sendPushNotification: sendPushNotification,
+  createHelloWorldProject: createHelloWorldProject
 };
