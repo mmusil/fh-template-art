@@ -16,12 +16,18 @@ describe('Tests for client apps', function() {
     describe(`Test for ${clientApp.clientAppName}`, function() {
 
       before(function() {
-        clientApp.buildType = clientApp.buildPlatform === 'android' ? config.buildTypeAndroid : config.buildTypeIOS;
+        clientApp.buildType = config.buildType[clientApp.buildPlatform];
+        clientApp.buildFile = require('path').resolve(__dirname, '../builds/1489695947961.app');
 
         return clientApp.prepareEnvironment()
           .then(clientApp.prepareCredBundle)
-          .then(clientApp.build)
+          // .then(clientApp.build)
+          .then(clientApp.findDevice)
           .then(clientApp.initAppium);
+      });
+
+      after(function() {
+        return clientApp.finishAppium();
       });
 
       clientApp.test();

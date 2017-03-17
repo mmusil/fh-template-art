@@ -16,7 +16,7 @@ class ClientApp {
     this.projectTemplateId = projectTemplateId;
     this.clientAppName = clientAppName;
     this.buildPlatform = buildPlatform;
-    this.test = test;
+    this.test = test.bind(this);
 
     this.projCreateTries = 0;
     this.cloudDeployTries = 0;

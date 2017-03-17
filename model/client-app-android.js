@@ -11,10 +11,15 @@ class AndroidClientApp extends ClientApp {
     super(projectTemplateId, clientAppName, 'android', test);
 
     this.createCredBundle = this.createCredBundle.bind(this);
+    this.findDevice = this.findDevice.bind(this);
     this.build = this.build.bind(this);
   }
 
   createCredBundle() {
+
+  }
+
+  findDevice() {
 
   }
 

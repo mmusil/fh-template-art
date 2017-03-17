@@ -12,6 +12,7 @@ const fhc = require('../utils/fhc');
 const rimraf = require('../utils/rimraf');
 const fs = require('fs');
 const unzip = require('../utils/unzip');
+const appiumConfig = require('../config/appium');
 
 class IOSClientApp extends ClientApp {
 
@@ -30,7 +31,7 @@ class IOSClientApp extends ClientApp {
         if (!deviceId) {
           throw new Error('No connected iOS device found');
         }
-        this.deviceId = deviceId[1];
+        appiumConfig.ios.udid = deviceId[1];
       });
   }
 
