@@ -56,7 +56,7 @@ function init() {
     .timeouts('implicit', 20000);
 }
 
-function enablePush(clientApp) {
+function enablePushIOS(clientApp) {
   return init(client)
       .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
       .then(() => (login(config.username, config.password)))
@@ -80,14 +80,14 @@ function enablePush(clientApp) {
             .pause(3000)
             .waitForVisible('#textInput-modal-markup')
             .setValue('#textInput-modal-markup', 'ios')
-            .then(this.setupPush)
+            .then(() => (setupPushIOS(clientApp.credBundle.key)))
             .waitForVisible('.modal-footer button.btn-primary')
             .click('.modal-footer button.btn-primary')
             .pause(3000);
         } else {
           return client
             .click('#ups-app-detail-root button')
-            .then(this.setupPush)
+            .then(() => (setupPushIOS(clientApp.credBundle.key)))
             .waitForVisible('#enablePush')
             .click('#enablePush');
         }
@@ -105,11 +105,83 @@ function enablePush(clientApp) {
       .end();
 }
 
+function setupPushIOS(p12) {
+  console.log(p12);
+  return client
+    .waitForVisible('.ups-variant-ios')
+    .click('.ups-variant-ios')
+    .waitForVisible('.ups-add-variable input[type="file"]')
+    .chooseFile('.ups-add-variable input[type="file"]', p12)
+    .waitForVisible('#iosType2')
+    .click('#iosType2')
+    .waitForVisible('#iosPassphrase')
+    .setValue('#iosPassphrase', config.ios.push.p12Password);
+}
+
+function createCredBundleIOS(clientApp) {
+  return init(client)
+    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/credentials`)
+    .then(() => (login(config.username, config.password)))
+    .waitForVisible('#new-bundle-btn')
+    .click('#new-bundle-btn')
+    .waitForVisible('.platform-selector [data-id="ios"]')
+    .click('.platform-selector [data-id="ios"]')
+    .waitForVisible('#bundle-name')
+    .setValue('#bundle-name', config.prefix + (clientApp.push ? 'push-' : '') + new Date().getTime())
+    .waitForVisible('#type')
+    .selectByValue('#type', clientApp.buildType)
+    .waitForVisible('#private_key')
+    .chooseFile('#private_key', clientApp.credentials.key)
+    .pause(2000)
+    .waitForVisible('#cert')
+    .chooseFile('#cert', clientApp.credentials.cer)
+    .pause(2000)
+    .waitForVisible('#prov_profile')
+    .chooseFile('#prov_profile', clientApp.credentials.prov)
+    .pause(2000)
+    .waitForVisible('.btn-submit')
+    .click('.btn-submit')
+    .pause(5000)
+    .end();
+}
+
+function sendPushNotification(clientApp) {
+  return init(client)
+    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
+    .then(() => (login(client, config.username, config.password)))
+    .then(waitForDeviceRegistered)
+    .waitForVisible('#send-notification-btn')
+    .click('#send-notification-btn')
+    .pause(3000)
+    .waitForVisible('#pushAlert')
+    .setValue('#pushAlert', 'test')
+    .waitForVisible('#sendPush')
+    .click('#sendPush')
+    .end();
+}
+
+function waitForDeviceRegistered() {
+  return client
+    .pause(4000)
+    .refresh()
+    .waitForVisible('#stat-device-count span.count')
+    .getText('#stat-device-count span.count')
+    .then(numReg => {
+      if (Number(numReg) <= 0) {
+        return waitForDeviceRegistered();
+      }
+    });
+}
+
 module.exports = {
   login: login,
   selectEnvironment: selectEnvironment,
   addVariable: addVariable,
   pushVariables: pushVariables,
   init: init,
-  enablePush: enablePush
+  ios: {
+    enablePush: enablePushIOS,
+    createCredBundle: createCredBundleIOS
+  },
+  sendPushNotification: sendPushNotification
 };

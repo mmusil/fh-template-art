@@ -7,8 +7,8 @@ const path = require('path');
 
 class AndroidClientApp extends ClientApp {
 
-  constructor(projectTemplateId, clientAppName, test) {
-    super(projectTemplateId, clientAppName, 'android', test);
+  constructor(projectTemplateId, clientAppName, test, push) {
+    super(projectTemplateId, clientAppName, 'android', test, push);
 
     this.createCredBundle = this.createCredBundle.bind(this);
     this.findDevice = this.findDevice.bind(this);

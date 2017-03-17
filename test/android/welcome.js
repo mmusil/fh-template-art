@@ -1,9 +1,11 @@
 "use strict";
 
-function test(driver) {
+function test() {
+
+  const self = this;
 
   step('should wait for the app to initialize', function() {
-    return driver
+    return self.driver
       .sleep(5000);
   });
 

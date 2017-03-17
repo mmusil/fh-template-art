@@ -9,14 +9,16 @@ chai.use(chaiAsPromised);
 chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 const appiumConfig = require('../config/appium');
+const studio = require('../utils/studio');
 
 class ClientApp {
 
-  constructor(projectTemplateId, clientAppName, buildPlatform, test) {
+  constructor(projectTemplateId, clientAppName, buildPlatform, test, push) {
     this.projectTemplateId = projectTemplateId;
     this.clientAppName = clientAppName;
     this.buildPlatform = buildPlatform;
     this.test = test.bind(this);
+    this.push = push;
 
     this.projCreateTries = 0;
     this.cloudDeployTries = 0;
@@ -26,6 +28,7 @@ class ClientApp {
     this.prepareCredBundle = this.prepareCredBundle.bind(this);
     this.findSuitableCredBundle = this.findSuitableCredBundle.bind(this);
     this.prepareEnvironment = this.prepareEnvironment.bind(this);
+    this.sendPushNotification = this.sendPushNotification.bind(this);
     this.prepareConnection = this.prepareConnection.bind(this);
     this.findSuitableProjects = this.findSuitableProjects.bind(this);
     this.findProjectWithRunningCloudApp = this.findProjectWithRunningCloudApp.bind(this);
@@ -41,7 +44,9 @@ class ClientApp {
   }
 
   finishAppium() {
-    return this.driver.guit();
+    if (this.driver) {
+      return this.driver.quit();
+    }
   }
 
   prepareCredBundle() {
@@ -58,7 +63,7 @@ class ClientApp {
     return fhc.credentialsList()
       .then(credentials => (
         credentials.find(cred => (
-          cred.bundleName.startsWith(config.prefix) &&
+          cred.bundleName.startsWith(config.prefix + (this.push ? 'push-' : '')) &&
           cred.platform === this.buildPlatform &&
           cred.bundleType === this.buildType
         ))
@@ -67,17 +72,22 @@ class ClientApp {
 
   prepareEnvironment() {
     return this.prepareProject()
-      .then(this.prepareConnection);
+      .then(this.prepareConnection)
+      .then(() => {
+        if (this.push) {
+          return this.preparePush();
+        }
+      })
+      .then(this.prepareCredBundle);
+  }
+
+  sendPushNotification() {
+    return studio.sendPushNotification(this);
   }
 
   prepareConnection() {
     return fhc.connectionsList(this.project.guid)
-      .then(connections => (
-        connections.find(connection => (
-          connection.clientApp === this.clientApp.guid &&
-          connection.environment === this.environment
-        ))
-      ))
+      .then(connections => (connections.find(connection => (connection.clientApp === this.clientApp.guid))))
       .then(connection => (
         fhc.connectionUpdate(
           this.project.guid,

@@ -17,10 +17,9 @@ describe('Tests for client apps', function() {
 
       before(function() {
         clientApp.buildType = config.buildType[clientApp.buildPlatform];
-        clientApp.buildFile = require('path').resolve(__dirname, '../builds/1489695947961.app');
+        clientApp.buildFile = require('path').resolve(__dirname, '../builds/1489762761567.apk');
 
         return clientApp.prepareEnvironment()
-          .then(clientApp.prepareCredBundle)
           // .then(clientApp.build)
           .then(clientApp.findDevice)
           .then(clientApp.initAppium);
