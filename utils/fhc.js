@@ -275,6 +275,18 @@ function credentialsList() {
   });
 }
 
+function ping(appId, env) {
+  return new Promise(function(resolve) {
+    fh.ping({_:[appId, '--env=' + env]}, function(error) {
+      if (error) {
+        return resolve(false);
+      }
+
+      resolve(true);
+    });
+  });
+}
+
 module.exports = {
   init: init,
   appDeploy: appDeploy,
@@ -294,5 +306,6 @@ module.exports = {
   servicesList: servicesList,
   buildIOS: buildIOS,
   buildAndroidDebug: buildAndroidDebug,
-  credentialsList: credentialsList
+  credentialsList: credentialsList,
+  ping: ping
 };

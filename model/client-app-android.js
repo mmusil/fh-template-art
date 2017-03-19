@@ -7,12 +7,22 @@ const path = require('path');
 
 class AndroidClientApp extends ClientApp {
 
-  constructor(projectTemplateId, clientAppName, test, push) {
-    super(projectTemplateId, clientAppName, 'android', test, push);
+  constructor(projectTemplateId, clientAppName, test) {
+    super(projectTemplateId, clientAppName, 'android', test);
 
+    this.prepareSAMLPlatSpecific = this.prepareSAMLPlatSpecific.bind(this);
+    this.preparePush = this.preparePush.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.findDevice = this.findDevice.bind(this);
     this.build = this.build.bind(this);
+  }
+
+  prepareSAMLPlatSpecific() {
+
+  }
+
+  preparePush() {
+
   }
 
   createCredBundle() {

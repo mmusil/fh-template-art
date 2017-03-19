@@ -57,7 +57,7 @@ function init() {
 }
 
 function enablePushIOS(clientApp) {
-  return init(client)
+  return init()
       .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
       .then(() => (login(config.username, config.password)))
       .waitForVisible('#ups-app-detail-root button')
@@ -118,7 +118,7 @@ function setupPushIOS(p12, pass) {
 }
 
 function createCredBundleIOS(clientApp) {
-  return init(client)
+  return init()
     .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/credentials`)
     .then(() => (login(config.username, config.password)))
     .waitForVisible('#new-bundle-btn')
@@ -145,7 +145,7 @@ function createCredBundleIOS(clientApp) {
 }
 
 function sendPushNotification(clientApp) {
-  return init(client)
+  return init()
     .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
     .then(() => (login(config.username, config.password)))
     .then(waitForDeviceRegistered)
@@ -173,7 +173,7 @@ function waitForDeviceRegistered() {
 }
 
 function createHelloWorldProject(name) {
-  return init(client)
+  return init()
     .url(`${config.host}/#projects/new`)
     .then(() => (login(config.username, config.password)))
     .waitForVisible('.search-query')
@@ -199,6 +199,95 @@ function createHelloWorldProject(name) {
     .end();
 }
 
+function setSAMLVariables(clientApp, samlConfig) {
+  return init()
+    .url(`${config.host}/#/services/${clientApp.service.guid}/apps/${clientApp.serviceId}/environment_variables`)
+    .then(() => (login(config.username, config.password)))
+    .pause(10000)
+    .then(() => (selectEnvironment(clientApp.environmentName)))
+    .then(() => (addVariable('SAML_ENTRY_POINT', samlConfig.entryPoint)))
+    .then(() => (addVariable('SAML_AUTH_CONTEXT', samlConfig.authContext)))
+    .then(() => (addVariable('SAML_CERT', samlConfig.cert)))
+    .then(() => (pushVariables()))
+    .end();
+}
+
+function getSAMLExampleUrl(clientApp) {
+  return init()
+    .url(`${config.host}/#/services/${clientApp.service.guid}/apps/${clientApp.serviceId}/preview`)
+    .then(() => (login(config.username, config.password)))
+    .pause(10000)
+    .then(() => (selectEnvironment(this.environmentName)))
+    .waitForVisible('.cloud-url')
+    .getText('.cloud-url')
+    .then(samlExampleUrl => {
+      clientApp.samlExampleUrl = samlExampleUrl;
+    })
+    .end();
+}
+
+function getSAMLIssuer(clientApp) {
+  return init()
+    .url(clientApp.samlExampleUrl)
+    .waitForVisible('tbody tr:first-child td:nth-child(2)')
+    .getText('tbody tr:first-child td:nth-child(2)')
+    .then(issuer => {
+      clientApp.samlIssuer = issuer;
+    })
+    .end();
+}
+
+function associateService(clientApp) {
+  return init()
+    .url(`${config.host}/#/projects/${clientApp.project.guid}/apps`)
+    .then(() => (login(config.username, config.password)))
+    .waitForVisible('.associate_services')
+    .pause(5000)
+    .element('#connectors_list').isVisible(`.item_title*=${clientApp.service.title}`)
+    .then(associated => {
+      if (!associated) {
+        return client
+          .click('.associate_services')
+          .waitForVisible(`div.title=${clientApp.project.title}`)
+          .click(`div.title=${clientApp.project.title}`)
+          .waitForVisible('.save_btn')
+          .click('.save_btn');
+      }
+    })
+    .end();
+}
+
+function associateSAML(clientApp) {
+  return init()
+    .url(`${config.host}/#/projects/${clientApp.project.guid}/apps/${clientApp.cloudApp.guid}/environment_variables`)
+    .then(() => (login(config.username, config.password)))
+    .then(() => (selectEnvironment(clientApp.environmentName)))
+    .pause(2000)
+    .element('#app-env-vars-list').isVisible('td=SAML_SERVICE')
+    .then(visible => {
+      if (visible) {
+        return client
+          .element('#app-env-vars-list').click('td=SAML_SERVICE')
+          .pause(2000);
+      } else {
+        return client
+          .waitForVisible('.add_env_var_btn')
+          .click('.add_env_var_btn')
+          .pause(2000)
+          .waitForVisible('#name')
+          .setValue('#name', 'SAML_SERVICE');
+      }
+    })
+    .waitForVisible('#env_var_value')
+    .clearElement('#env_var_value')
+    .setValue('#env_var_value', clientApp.serviceId)
+    .waitForVisible('.save_env_var_btn')
+    .click('.save_env_var_btn')
+    .pause(2000)
+    .then(() => (pushVariables()))
+    .end();
+}
+
 module.exports = {
   login: login,
   selectEnvironment: selectEnvironment,
@@ -210,5 +299,10 @@ module.exports = {
     createCredBundle: createCredBundleIOS
   },
   sendPushNotification: sendPushNotification,
-  createHelloWorldProject: createHelloWorldProject
+  createHelloWorldProject: createHelloWorldProject,
+  setSAMLVariables: setSAMLVariables,
+  getSAMLExampleUrl: getSAMLExampleUrl,
+  getSAMLIssuer: getSAMLIssuer,
+  associateService: associateService,
+  associateSAML: associateSAML
 };

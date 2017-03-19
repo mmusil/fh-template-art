@@ -17,7 +17,7 @@ describe('Tests for client apps', function() {
 
       before(function() {
         clientApp.buildType = config.buildType[clientApp.buildPlatform];
-        // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1489774296483.app');
+        // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1489926447767.app');
 
         return clientApp.prepareEnvironment()
           .then(clientApp.build)

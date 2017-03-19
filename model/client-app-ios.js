@@ -11,20 +11,29 @@ const fs = require('fs');
 const unzip = require('../utils/unzip');
 const appiumConfig = require('../config/appium');
 const git = require('../utils/git');
+const plist = require('plist');
 
 class IOSClientApp extends ClientApp {
 
-  constructor(projectTemplateId, clientAppName, test, push, scheme, bundleId) {
-    super(projectTemplateId, clientAppName, 'ios', test, push);
+  constructor(projectTemplateId, clientAppName, test, scheme, bundleId) {
+    super(projectTemplateId, clientAppName, 'ios', test);
 
     this.scheme = scheme;
     this.bundleId = bundleId;
 
+    this.prepareSAMLPlatSpecific = this.prepareSAMLPlatSpecific.bind(this);
     this.preparePush = this.preparePush.bind(this);
     this.changeBundleId = this.changeBundleId.bind(this);
+    this.allowArbitraryLoads = this.allowArbitraryLoads.bind(this);
     this.findDevice = this.findDevice.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.build = this.build.bind(this);
+  }
+
+  prepareSAMLPlatSpecific() {
+    if (this.clientAppName === 'SAML iOS (Objective-C)') {
+      return this.allowArbitraryLoads();
+    }
   }
 
   preparePush() {
@@ -44,6 +53,23 @@ class IOSClientApp extends ClientApp {
       })
       .then(() => (git.add(`${this.scheme}.xcodeproj/project.pbxproj`, tempFolder)))
       .then(() => (git.commit('Updated bundleId', tempFolder)))
+      .then(() => (git.push('origin', 'master', tempFolder)));
+  }
+
+  allowArbitraryLoads() {
+    const tempFolder = path.resolve(__dirname, '../temp');
+    const plistFile = path.resolve(tempFolder, this.scheme, `${this.scheme}-Info.plist`);
+    return rimraf(tempFolder)
+      .then(() => (git.clone(this.clientApp.scmUrl, tempFolder, 'master')))
+      .then(() => {
+        const plistData = plist.parse(fs.readFileSync(plistFile, 'utf8'));
+        plistData.NSAppTransportSecurity = {
+          NSAllowsArbitraryLoads: true
+        };
+        fs.writeFileSync(plistFile, plist.build(plistData));
+      })
+      .then(() => (git.add(`${this.scheme}/${this.scheme}-Info.plist`, tempFolder)))
+      .then(() => (git.commit('Allowed arbitrary loads', tempFolder)))
       .then(() => (git.push('origin', 'master', tempFolder)));
   }
 

@@ -10,15 +10,20 @@ chai.should();
 chaiAsPromised.transferPromiseness = wd.transferPromiseness;
 const appiumConfig = require('../config/appium');
 const studio = require('../utils/studio');
+const path = require('path');
+const rimraf = require('../utils/rimraf');
+const fs = require('fs');
+const exec = require('../utils/exec');
 
 class ClientApp {
 
-  constructor(projectTemplateId, clientAppName, buildPlatform, test, push) {
+  constructor(projectTemplateId, clientAppName, buildPlatform, test) {
     this.projectTemplateId = projectTemplateId;
     this.clientAppName = clientAppName;
     this.buildPlatform = buildPlatform;
     this.test = test.bind(this);
-    this.push = push;
+    this.push = projectTemplateId === 'pushstarter_project';
+    this.saml = projectTemplateId === 'saml_project';
 
     this.projCreateTries = 0;
     this.cloudDeployTries = 0;
@@ -28,6 +33,10 @@ class ClientApp {
     this.prepareCredBundle = this.prepareCredBundle.bind(this);
     this.findSuitableCredBundle = this.findSuitableCredBundle.bind(this);
     this.prepareEnvironment = this.prepareEnvironment.bind(this);
+    this.prepareSAML = this.prepareSAML.bind(this);
+    this.prepareService = this.prepareService.bind(this);
+    this.createService = this.createService.bind(this);
+    this.deployService = this.deployService.bind(this);
     this.sendPushNotification = this.sendPushNotification.bind(this);
     this.prepareConnection = this.prepareConnection.bind(this);
     this.findSuitableProjects = this.findSuitableProjects.bind(this);
@@ -80,7 +89,95 @@ class ClientApp {
           return this.preparePush();
         }
       })
+      .then(() => {
+        if (this.saml) {
+          return this.prepareSAML();
+        }
+      })
       .then(this.prepareCredBundle);
+  }
+
+  prepareSAML() {
+    this.SAMLTempFolder = path.resolve(__dirname, '../tempSAML');
+    return rimraf(this.SAMLTempFolder)
+      .then(() => (fhc.environmentRead(this.environment)))
+      .then(env => {
+        this.environmentName = env.label;
+      })
+      .then(fhc.servicesList)
+      .then(this.prepareService)
+      .then(() => (studio.associateService(this)))
+      .then(() => (studio.associateSAML(this)))
+      .then(this.prepareSAMLPlatSpecific);
+  }
+
+  prepareService(services) {
+    const matchingServices = services.filter(service => {
+      const templateMatch = service.jsonTemplateId === 'saml-service';
+      const prefixMatch = service.title.startsWith(config.prefix);
+      return templateMatch && prefixMatch;
+    });
+    if (matchingServices.length === 0) {
+      return this.createService()
+        .then(this.deployService);
+    }
+    const runningServ = matchingServices.find(service => {
+      const cloudApp = service.apps.find(app => (app.type === 'cloud_nodejs'));
+      return cloudApp.runtime[this.environment];
+    });
+    if (!runningServ) {
+      this.service = matchingServices[0];
+      this.serviceId = this.service.apps.find(app => (app.type === 'cloud_nodejs')).guid;
+      return this.deployService();
+    }
+    this.serviceId = runningServ.apps.find(app => (app.type === 'cloud_nodejs')).guid;
+    this.service = runningServ;
+    return fhc.ping(this.serviceId, this.environment)
+      .then(running => {
+        if (!running) {
+          return this.deployService(true);
+        }
+      });
+  }
+
+  createService() {
+    return fhc.serviceCreate(this.projectName, 'saml-service')
+      .then(service => {
+        this.service = service;
+        this.serviceId = service.apps[0].guid;
+      });
+  }
+
+  deployService(alreadySet) {
+    return fhc.appDeploy(this.serviceId, this.environment)
+      .then(() => {
+        if (!alreadySet) {
+          return studio.setSAMLVariables(this, config.saml)
+          .then(() => (studio.getSAMLExampleUrl(this)))
+          .then(() => (studio.getSAMLIssuer(this)))
+          .then(this.addSP);
+        }
+      });
+  }
+
+  addSP() {
+    return fs.mkdir(this.SAMLTempFolder)
+      .then(() => (exec('oc project saml', this.SAMLTempFolder)))
+      .then(() => (exec('oc get pods -o json', this.SAMLTempFolder)))
+      .then(pods => {
+        this.samlPod = JSON.parse(pods.stdout).items[0].metadata.name;
+      })
+      .then(() => (exec(`oc rsync ${this.samlPod}:/var/simplesamlphp/metadata/ .`, this.SAMLTempFolder)))
+      .then(() => (
+        fs.appendFile(
+          path.resolve(this.SAMLTempFolder, 'saml20-sp-remote.php'),
+          `
+          $metadata['${this.samlIssuer}'] = array(
+            'AssertionConsumerService' => '${this.samlIssuer}',
+          );`
+        )
+      ))
+      .then(() => (exec(`oc rsync ./ ${this.samlPod}:/var/simplesamlphp/metadata`, this.SAMLTempFolder)));
   }
 
   sendPushNotification() {
@@ -150,6 +247,12 @@ class ClientApp {
         }
         this.cloudApp = runningProj.apps.find(app => (app.type === 'cloud_nodejs'));
         this.project = runningProj;
+        return fhc.ping(this.cloudApp.guid, this.environment)
+          .then(running => {
+            if (!running) {
+              return this.deployCloudApp();
+            }
+          });
       })
       .then(() => {
         this.clientApp = this.project.apps.find(app => (app.title === this.clientAppName));
