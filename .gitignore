@@ -5,5 +5,4 @@ temp
 tempSAML
 fixtures/fastlane.p12
 fixtures/ios
-config/config.js
 builds/*
