@@ -206,6 +206,18 @@ function serviceCreate(name, templateId) {
   });
 }
 
+function serviceDelete(guid) {
+  return new Promise(function(resolve, reject) {
+    fh.services({_:['delete', guid]}, function(error, res) {
+      if (error) {
+        return reject(error);
+      }
+
+      resolve(res);
+    });
+  });
+}
+
 function servicesList() {
   return new Promise(function(resolve, reject) {
     fh.services({_:['list']}, function(error, res) {
@@ -303,6 +315,7 @@ module.exports = {
   secureEndpoints: secureEndpoints,
   environmentRead: environmentRead,
   serviceCreate: serviceCreate,
+  serviceDelete: serviceDelete,
   servicesList: servicesList,
   buildIOS: buildIOS,
   buildAndroidDebug: buildAndroidDebug,

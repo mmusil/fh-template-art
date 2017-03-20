@@ -3,13 +3,15 @@
 const clientApps = require('../client-apps');
 const config = require('../config/config');
 const fhc = require('../utils/fhc');
+const cleanup = require('../utils/cleanup');
 
 describe('Tests for client apps', function() {
 
   this.timeout(15 * 60 * 1000);
 
   before(function() {
-    return fhc.init(config.host, config.username, config.password);
+    return fhc.init(config.host, config.username, config.password)
+      .then(cleanup);
   });
 
   clientApps.forEach(function(clientApp) {
