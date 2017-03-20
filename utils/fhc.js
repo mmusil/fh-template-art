@@ -33,7 +33,7 @@ function init(host, username, password) {
 
 function appDeploy(appGuid, env) {
   return new Promise(function(resolve, reject) {
-    fh.app.stage({app: appGuid, env: env}, function(error, startRes) {
+    fh.app.stage({app: appGuid, env: env, runtime: 'node4'}, function(error, startRes) {
       if (error) {
         return reject(error);
       }

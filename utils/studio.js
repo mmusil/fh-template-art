@@ -58,51 +58,51 @@ function init() {
 
 function enablePushIOS(clientApp) {
   return init()
-      .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
-      .then(() => (login(config.username, config.password)))
-      .waitForVisible('#ups-app-detail-root button')
-      .isVisible('#add-variant-btn')
-      .then(visible => {
-        if (visible) {
-          return client
-            .waitForVisible('.ups-variant-header')
-            .moveToObject('.ups-variant-header')
-            .waitForVisible('.ups-variant-header .actions .danger a')
-            .click('.ups-variant-header .actions .danger a')
-            .pause(3000)
-            .waitForVisible('input[ng-model="confirmVariantName"]')
-            .setValue('input[ng-model="confirmVariantName"]', 'ios')
-            .waitForVisible('.modal-dialog button[type="submit"]')
-            .click('.modal-dialog button[type="submit"]')
-            .pause(3000)
-            .waitForVisible('#add-variant-btn')
-            .click('#add-variant-btn')
-            .pause(3000)
-            .waitForVisible('#textInput-modal-markup')
-            .setValue('#textInput-modal-markup', 'ios')
-            .then(() => (setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password)))
-            .waitForVisible('.modal-footer button.btn-primary')
-            .click('.modal-footer button.btn-primary')
-            .pause(3000);
-        } else {
-          return client
-            .click('#ups-app-detail-root button')
-            .then(() => (setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password)))
-            .waitForVisible('#enablePush')
-            .click('#enablePush');
-        }
-      })
-      .waitForVisible('.variant-id')
-      .getText('.variant-id')
-      .then(variantId => {
-        this.pushVariantId = variantId;
-      })
-      .waitForVisible('.variant-secret')
-      .getText('.variant-secret')
-      .then(variantSecret => {
-        this.pushVariantSecret = variantSecret.split('\n')[0];
-      })
-      .end();
+    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
+    .then(() => (login(config.username, config.password)))
+    .waitForVisible('#ups-app-detail-root button')
+    .isExisting('#add-variant-btn')
+    .then(visible => {
+      if (visible) {
+        return client
+          .waitForVisible('.ups-variant-header')
+          .moveToObject('.ups-variant-header')
+          .waitForVisible('.ups-variant-header .actions .danger a')
+          .click('.ups-variant-header .actions .danger a')
+          .pause(3000)
+          .waitForVisible('input[ng-model="confirmVariantName"]')
+          .setValue('input[ng-model="confirmVariantName"]', 'ios')
+          .waitForVisible('.modal-dialog button[type="submit"]')
+          .click('.modal-dialog button[type="submit"]')
+          .pause(3000)
+          .waitForVisible('#add-variant-btn')
+          .click('#add-variant-btn')
+          .pause(3000)
+          .waitForVisible('#textInput-modal-markup')
+          .setValue('#textInput-modal-markup', 'ios')
+          .then(() => (setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password)))
+          .waitForVisible('.modal-footer button.btn-primary')
+          .click('.modal-footer button.btn-primary')
+          .pause(3000);
+      } else {
+        return client
+          .click('#ups-app-detail-root button')
+          .then(() => (setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password)))
+          .waitForVisible('#enablePush')
+          .click('#enablePush');
+      }
+    })
+    .waitForVisible('.variant-id')
+    .getText('.variant-id')
+    .then(variantId => {
+      this.pushVariantId = variantId;
+    })
+    .waitForVisible('.variant-secret')
+    .getText('.variant-secret')
+    .then(variantSecret => {
+      this.pushVariantSecret = variantSecret.split('\n')[0];
+    })
+    .end();
 }
 
 function setupPushIOS(p12, pass) {
@@ -114,7 +114,8 @@ function setupPushIOS(p12, pass) {
     .waitForVisible('#iosType2')
     .click('#iosType2')
     .waitForVisible('#iosPassphrase')
-    .setValue('#iosPassphrase', pass);
+    .setValue('#iosPassphrase', pass)
+    .pause(2000);
 }
 
 function createCredBundleIOS(clientApp) {

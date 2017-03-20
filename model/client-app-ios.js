@@ -45,10 +45,10 @@ class IOSClientApp extends ClientApp {
     const tempFolder = path.resolve(__dirname, '../temp');
     const pbxprojFile = path.resolve(tempFolder, this.scheme + '.xcodeproj', 'project.pbxproj');
     return rimraf(tempFolder)
-      .then(() => (git.clone(this.clientApp.scmUrl, tempFolder, 'master')))
+      .then(() => (git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master')))
       .then(() => {
         const pbxproj = fs.readFileSync(pbxprojFile, 'utf8');
-        const replaced = pbxproj.split(this.bundleId).join(config.ios.push.BundleId);
+        const replaced = pbxproj.split(this.bundleId).join(config.ios.push[this.buildType].bundleId);
         fs.writeFileSync(pbxprojFile, replaced);
       })
       .then(() => (git.add(`${this.scheme}.xcodeproj/project.pbxproj`, tempFolder)))
@@ -60,7 +60,7 @@ class IOSClientApp extends ClientApp {
     const tempFolder = path.resolve(__dirname, '../temp');
     const plistFile = path.resolve(tempFolder, this.scheme, `${this.scheme}-Info.plist`);
     return rimraf(tempFolder)
-      .then(() => (git.clone(this.clientApp.scmUrl, tempFolder, 'master')))
+      .then(() => (git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master')))
       .then(() => {
         const plistData = plist.parse(fs.readFileSync(plistFile, 'utf8'));
         plistData.NSAppTransportSecurity = {
