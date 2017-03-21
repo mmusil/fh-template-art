@@ -39,6 +39,7 @@ class ClientApp {
     this.prepareService = this.prepareService.bind(this);
     this.createService = this.createService.bind(this);
     this.deployService = this.deployService.bind(this);
+    this.addSP = this.addSP.bind(this);
     this.sendPushNotification = this.sendPushNotification.bind(this);
     this.prepareConnection = this.prepareConnection.bind(this);
     this.findSuitableProjects = this.findSuitableProjects.bind(this);
@@ -83,7 +84,7 @@ class ClientApp {
     return fhc.credentialsList()
       .then(credentials =>
         credentials.find(cred =>
-          cred.bundleName.startsWith(config.prefix + (this.push ? 'push-' : '')) &&
+          cred.bundleName.startsWith(config.prefix + (this.push ? 'push-' : 'normal-')) &&
           cred.platform === this.buildPlatform &&
           cred.bundleType === this.buildType
         )
@@ -152,7 +153,7 @@ class ClientApp {
   }
 
   createService() {
-    return fhc.serviceCreate(this.projectName, 'saml-service')
+    return fhc.serviceCreate(this.project.title, 'saml-service')
       .then(service => {
         this.service = service;
         this.serviceId = service.apps[0].guid;
@@ -172,15 +173,15 @@ class ClientApp {
   }
 
   addSP() {
-    return fs.mkdir(this.SAMLTempFolder)
-      .then(() => exec('oc project saml', this.SAMLTempFolder))
+    fs.mkdirSync(this.SAMLTempFolder);
+    return exec('oc project saml', this.SAMLTempFolder)
       .then(() => exec('oc get pods -o json', this.SAMLTempFolder))
       .then(pods => {
         this.samlPod = JSON.parse(pods.stdout).items[0].metadata.name;
       })
       .then(() => exec(`oc rsync ${this.samlPod}:/var/simplesamlphp/metadata/ .`, this.SAMLTempFolder))
       .then(() =>
-        fs.appendFile(
+        fs.appendFileSync(
           path.resolve(this.SAMLTempFolder, 'saml20-sp-remote.php'),
           `
           $metadata['${this.samlIssuer}'] = array(

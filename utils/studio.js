@@ -97,16 +97,6 @@ function enablePushIOS(clientApp) {
           .click('#enablePush');
       }
     })
-    .waitForVisible('.variant-id')
-    .getText('.variant-id')
-    .then(variantId => {
-      this.pushVariantId = variantId;
-    })
-    .waitForVisible('.variant-secret')
-    .getText('.variant-secret')
-    .then(variantSecret => {
-      this.pushVariantSecret = variantSecret.split('\n')[0];
-    })
     .end();
 }
 
@@ -232,7 +222,7 @@ function getSAMLExampleUrl(clientApp) {
     .url(`${config.host}/#/services/${clientApp.service.guid}/apps/${clientApp.serviceId}/preview`)
     .then(() => login(config.username, config.password))
     .pause(10000)
-    .then(() => selectEnvironment(this.environmentName))
+    .then(() => selectEnvironment(clientApp.environmentName))
     .waitForVisible('.cloud-url')
     .getText('.cloud-url')
     .then(samlExampleUrl => {
@@ -314,7 +304,7 @@ function pullApp(clientApp) {
     .then(() => login(config.username, config.password))
     .waitForVisible('.gitpull_btn')
     .click('.gitpull_btn')
-    .pause(2000)
+    .pause(5000)
     .end();
 }
 

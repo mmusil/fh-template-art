@@ -23,8 +23,10 @@ class IOSClientApp extends ClientApp {
 
     this.prepareSAMLPlatSpecific = this.prepareSAMLPlatSpecific.bind(this);
     this.preparePush = this.preparePush.bind(this);
+    this.editFile = this.editFile.bind(this);
     this.changeBundleId = this.changeBundleId.bind(this);
     this.allowArbitraryLoads = this.allowArbitraryLoads.bind(this);
+    this.allowArbitraryLoadsCordova = this.allowArbitraryLoadsCordova.bind(this);
     this.findDevice = this.findDevice.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.build = this.build.bind(this);
@@ -34,6 +36,9 @@ class IOSClientApp extends ClientApp {
     if (this.clientAppName === 'SAML iOS (Objective-C)') {
       return this.allowArbitraryLoads();
     }
+    if (this.clientAppName === 'SAML Client') {
+      return this.allowArbitraryLoadsCordova();
+    }
   }
 
   preparePush() {
@@ -41,38 +46,44 @@ class IOSClientApp extends ClientApp {
       .then(() => studio.ios.enablePush(this));
   }
 
-  changeBundleId() {
+  editFile(fileName, editFunc) {
     const tempFolder = path.resolve(__dirname, '../temp');
-    const pbxprojFile = path.resolve(tempFolder, this.scheme + '.xcodeproj', 'project.pbxproj');
+    const file = path.resolve(tempFolder, fileName);
     return rimraf(tempFolder)
       .then(() => git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master'))
-      .then(() => {
-        const pbxproj = fs.readFileSync(pbxprojFile, 'utf8');
-        const replaced = pbxproj.split(this.bundleId).join(config.ios.push[this.buildType].bundleId);
-        fs.writeFileSync(pbxprojFile, replaced);
-      })
-      .then(() => git.add(`${this.scheme}.xcodeproj/project.pbxproj`, tempFolder))
+      .then(() => editFunc(file))
+      .then(() => git.add(fileName, tempFolder))
       .then(() => git.commit('Updated bundleId', tempFolder))
       .then(() => git.push('origin', 'master', tempFolder))
       .then(() => studio.pullApp(this));
   }
 
+  changeBundleId() {
+    return this.editFile(`${this.scheme}.xcodeproj/project.pbxproj`, file => {
+      const pbxproj = fs.readFileSync(file, 'utf8');
+      const replaced = pbxproj.split(this.bundleId).join(config.ios.push[this.buildType].bundleId);
+      fs.writeFileSync(file, replaced);
+    });
+  }
+
   allowArbitraryLoads() {
-    const tempFolder = path.resolve(__dirname, '../temp');
-    const plistFile = path.resolve(tempFolder, this.scheme, `${this.scheme}-Info.plist`);
-    return rimraf(tempFolder)
-      .then(() => git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master'))
-      .then(() => {
-        const plistData = plist.parse(fs.readFileSync(plistFile, 'utf8'));
-        plistData.NSAppTransportSecurity = {
-          NSAllowsArbitraryLoads: true
-        };
-        fs.writeFileSync(plistFile, plist.build(plistData));
-      })
-      .then(() => git.add(`${this.scheme}/${this.scheme}-Info.plist`, tempFolder))
-      .then(() => git.commit('Allowed arbitrary loads', tempFolder))
-      .then(() => git.push('origin', 'master', tempFolder))
-      .then(() => studio.pullApp(this));
+    return this.editFile(`${this.scheme}/${this.scheme}-Info.plist`, file => {
+      const plistData = plist.parse(fs.readFileSync(file, 'utf8'));
+      plistData.NSAppTransportSecurity = {
+        NSAllowsArbitraryLoads: true
+      };
+      fs.writeFileSync(file, plist.build(plistData));
+    });
+  }
+
+  allowArbitraryLoadsCordova() {
+    return this.editFile(`${this.scheme}/${this.scheme}-Info.plist`, file => {
+      const plistData = plist.parse(fs.readFileSync(file, 'utf8'));
+      plistData.NSAppTransportSecurity = {
+        NSAllowsArbitraryLoads: true
+      };
+      fs.writeFileSync(file, plist.build(plistData));
+    });
   }
 
   findDevice() {
