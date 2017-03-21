@@ -17,17 +17,19 @@ const exec = require('../utils/exec');
 
 class ClientApp {
 
-  constructor(projectTemplateId, clientAppName, buildPlatform, test) {
+  constructor(projectTemplateId, clientAppName, buildPlatform, test, cordova) {
     this.projectTemplateId = projectTemplateId;
     this.clientAppName = clientAppName;
     this.buildPlatform = buildPlatform;
     this.test = test.bind(this);
     this.push = projectTemplateId === 'pushstarter_project';
     this.saml = projectTemplateId === 'saml_project';
+    this.cordova = cordova;
 
     this.projCreateTries = 0;
     this.cloudDeployTries = 0;
 
+    this.webviewContext = this.webviewContext.bind(this);
     this.initAppium = this.initAppium.bind(this);
     this.finishAppium = this.finishAppium.bind(this);
     this.prepareCredBundle = this.prepareCredBundle.bind(this);
@@ -46,10 +48,19 @@ class ClientApp {
     this.deployCloudApp = this.deployCloudApp.bind(this);
   }
 
+  webviewContext() {
+    return this.driver.contexts().then(contexts => this.driver.context(contexts[1]));
+  }
+
   initAppium() {
     this.driver = wd.promiseChainRemote(appiumConfig.server);
     appiumConfig[this.buildPlatform].app = this.buildFile;
-    return this.driver.init(appiumConfig[this.buildPlatform]);
+    return this.driver.init(appiumConfig[this.buildPlatform])
+      .then(() => {
+        if (this.cordova) {
+          return this.webviewContext();
+        }
+      });
   }
 
   finishAppium() {
@@ -70,13 +81,13 @@ class ClientApp {
 
   findSuitableCredBundle() {
     return fhc.credentialsList()
-      .then(credentials => (
-        credentials.find(cred => (
+      .then(credentials =>
+        credentials.find(cred =>
           cred.bundleName.startsWith(config.prefix + (this.push ? 'push-' : '')) &&
           cred.platform === this.buildPlatform &&
           cred.bundleType === this.buildType
-        ))
-      ));
+        )
+      );
   }
 
   prepareEnvironment() {
@@ -100,14 +111,14 @@ class ClientApp {
   prepareSAML() {
     this.SAMLTempFolder = path.resolve(__dirname, '../tempSAML');
     return rimraf(this.SAMLTempFolder)
-      .then(() => (fhc.environmentRead(this.environment)))
+      .then(() => fhc.environmentRead(this.environment))
       .then(env => {
         this.environmentName = env.label;
       })
       .then(fhc.servicesList)
       .then(this.prepareService)
-      .then(() => (studio.associateService(this)))
-      .then(() => (studio.associateSAML(this)))
+      .then(() => studio.associateService(this))
+      .then(() => studio.associateSAML(this))
       .then(this.prepareSAMLPlatSpecific);
   }
 
@@ -122,15 +133,15 @@ class ClientApp {
         .then(this.deployService);
     }
     const runningServ = matchingServices.find(service => {
-      const cloudApp = service.apps.find(app => (app.type === 'cloud_nodejs'));
+      const cloudApp = service.apps.find(app => app.type === 'cloud_nodejs');
       return cloudApp.runtime[this.environment];
     });
     if (!runningServ) {
       this.service = matchingServices[0];
-      this.serviceId = this.service.apps.find(app => (app.type === 'cloud_nodejs')).guid;
+      this.serviceId = this.service.apps.find(app => app.type === 'cloud_nodejs').guid;
       return this.deployService();
     }
-    this.serviceId = runningServ.apps.find(app => (app.type === 'cloud_nodejs')).guid;
+    this.serviceId = runningServ.apps.find(app => app.type === 'cloud_nodejs').guid;
     this.service = runningServ;
     return fhc.ping(this.serviceId, this.environment)
       .then(running => {
@@ -153,8 +164,8 @@ class ClientApp {
       .then(() => {
         if (!alreadySet) {
           return studio.setSAMLVariables(this, config.saml)
-          .then(() => (studio.getSAMLExampleUrl(this)))
-          .then(() => (studio.getSAMLIssuer(this)))
+          .then(() => studio.getSAMLExampleUrl(this))
+          .then(() => studio.getSAMLIssuer(this))
           .then(this.addSP);
         }
       });
@@ -162,13 +173,13 @@ class ClientApp {
 
   addSP() {
     return fs.mkdir(this.SAMLTempFolder)
-      .then(() => (exec('oc project saml', this.SAMLTempFolder)))
-      .then(() => (exec('oc get pods -o json', this.SAMLTempFolder)))
+      .then(() => exec('oc project saml', this.SAMLTempFolder))
+      .then(() => exec('oc get pods -o json', this.SAMLTempFolder))
       .then(pods => {
         this.samlPod = JSON.parse(pods.stdout).items[0].metadata.name;
       })
-      .then(() => (exec(`oc rsync ${this.samlPod}:/var/simplesamlphp/metadata/ .`, this.SAMLTempFolder)))
-      .then(() => (
+      .then(() => exec(`oc rsync ${this.samlPod}:/var/simplesamlphp/metadata/ .`, this.SAMLTempFolder))
+      .then(() =>
         fs.appendFile(
           path.resolve(this.SAMLTempFolder, 'saml20-sp-remote.php'),
           `
@@ -176,8 +187,8 @@ class ClientApp {
             'AssertionConsumerService' => '${this.samlIssuer}',
           );`
         )
-      ))
-      .then(() => (exec(`oc rsync ./ ${this.samlPod}:/var/simplesamlphp/metadata`, this.SAMLTempFolder)));
+      )
+      .then(() => exec(`oc rsync ./ ${this.samlPod}:/var/simplesamlphp/metadata`, this.SAMLTempFolder));
   }
 
   sendPushNotification() {
@@ -186,18 +197,18 @@ class ClientApp {
 
   prepareConnection() {
     return fhc.connectionsList(this.project.guid)
-      .then(connections => (connections.find(connection => (
+      .then(connections => connections.find(connection =>
         connection.clientApp === this.clientApp.guid &&
         connection.status === 'ACTIVE'
-      ))))
-      .then(connection => (
+      ))
+      .then(connection =>
         fhc.connectionUpdate(
           this.project.guid,
           connection.guid,
           this.cloudApp.guid,
           this.environment
         )
-      ))
+      )
       .then(connection => {
         this.connection = connection;
       });
@@ -212,17 +223,17 @@ class ClientApp {
           return templateMatch && prefixMatch;
         });
 
-        return suitableProjects.reduce((p, proj) => (
-          p.then(() => (fhc.projectRead(proj.guid).then(full => {
+        return suitableProjects.reduce((p, proj) =>
+          p.then(() => fhc.projectRead(proj.guid).then(full => {
             proj.apps = full.apps;
-          })))
-        ), Promise.resolve()).then(() => (suitableProjects));
+          })
+        ), Promise.resolve()).then(() => suitableProjects);
       });
   }
 
   findProjectWithRunningCloudApp(projects) {
     return projects.find(project => {
-      const cloudApp = project.apps.find(app => (app.type === 'cloud_nodejs'));
+      const cloudApp = project.apps.find(app => app.type === 'cloud_nodejs');
       for (const env in cloudApp.runtime) {
         if (cloudApp.runtime[env]) {
           this.environment = env;
@@ -245,7 +256,7 @@ class ClientApp {
           this.project = projects[0];
           return this.deployCloudApp();
         }
-        this.cloudApp = runningProj.apps.find(app => (app.type === 'cloud_nodejs'));
+        this.cloudApp = runningProj.apps.find(app => app.type === 'cloud_nodejs');
         this.project = runningProj;
         return fhc.ping(this.cloudApp.guid, this.environment)
           .then(running => {
@@ -255,7 +266,7 @@ class ClientApp {
           });
       })
       .then(() => {
-        this.clientApp = this.project.apps.find(app => (app.title === this.clientAppName));
+        this.clientApp = this.project.apps.find(app => app.title === this.clientAppName);
       });
   }
 
@@ -287,7 +298,7 @@ class ClientApp {
       throw new Error('Can not deploy cloud app');
     }
     this.cloudDeployTries += 1;
-    this.cloudApp = this.project.apps.find(app => (app.type === 'cloud_nodejs'));
+    this.cloudApp = this.project.apps.find(app => app.type === 'cloud_nodejs');
     return fhc.appDeploy(this.cloudApp.guid, this.environment)
       .then(() => {
         this.cloudDeployed = true;

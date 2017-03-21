@@ -7,8 +7,8 @@ const path = require('path');
 
 class AndroidClientApp extends ClientApp {
 
-  constructor(projectTemplateId, clientAppName, test) {
-    super(projectTemplateId, clientAppName, 'android', test);
+  constructor(projectTemplateId, clientAppName, test, cordova) {
+    super(projectTemplateId, clientAppName, 'android', test, cordova);
 
     this.prepareSAMLPlatSpecific = this.prepareSAMLPlatSpecific.bind(this);
     this.preparePush = this.preparePush.bind(this);

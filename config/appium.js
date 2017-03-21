@@ -12,14 +12,15 @@ const config = {
     platformVersion: '10.2',
     deviceName: 'iPhone 7',
     xcodeOrgId: '75B468G5L7',
-    xcodeSigningId: 'iPhone Developer'
+    xcodeSigningId: 'iPhone Developer',
+    fullReset: true
   },
   android: {
     browserName: '',
     'appium-version': '1.6',
     platformName: 'Android',
     platformVersion: '4.4.2',
-    deviceName: 'Android Emulator',
+    deviceName: 'Android Emulator'
   }
 };
 

@@ -5,6 +5,8 @@ const options = { desiredCapabilities: { browserName: 'chrome' } };
 const client = webdriverio.remote(options);
 const config = require('../config/config');
 
+const implicitTimeout = 60000;
+
 function login(username, password) {
   return client
     .waitForVisible('#username')
@@ -53,18 +55,20 @@ function init() {
   return client
     .init()
     .setViewportSize({ width: 1024, height: 768 })
-    .timeouts('implicit', 60000);
+    .timeouts('implicit', implicitTimeout);
 }
 
 function enablePushIOS(clientApp) {
   return init()
     .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
-    .then(() => (login(config.username, config.password)))
+    .then(() => login(config.username, config.password))
     .waitForVisible('#ups-app-detail-root button')
+    .timeouts('implicit', 1000)
     .isExisting('#add-variant-btn')
     .then(visible => {
       if (visible) {
         return client
+          .timeouts('implicit', implicitTimeout)
           .waitForVisible('.ups-variant-header')
           .moveToObject('.ups-variant-header')
           .waitForVisible('.ups-variant-header .actions .danger a')
@@ -80,14 +84,15 @@ function enablePushIOS(clientApp) {
           .pause(3000)
           .waitForVisible('#textInput-modal-markup')
           .setValue('#textInput-modal-markup', 'ios')
-          .then(() => (setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password)))
+          .then(() => setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password, clientApp.buildType))
           .waitForVisible('.modal-footer button.btn-primary')
           .click('.modal-footer button.btn-primary')
           .pause(3000);
       } else {
         return client
+          .timeouts('implicit', implicitTimeout)
           .click('#ups-app-detail-root button')
-          .then(() => (setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password)))
+          .then(() => setupPushIOS(clientApp.credConfig.p12, clientApp.credConfig.p12Password, clientApp.buildType))
           .waitForVisible('#enablePush')
           .click('#enablePush');
       }
@@ -105,14 +110,23 @@ function enablePushIOS(clientApp) {
     .end();
 }
 
-function setupPushIOS(p12, pass) {
+function setupPushIOS(p12, pass, type) {
   return client
     .waitForVisible('.ups-variant-ios')
     .click('.ups-variant-ios')
     .waitForVisible('.ups-add-variable input[type="file"]')
     .chooseFile('.ups-add-variable input[type="file"]', p12)
-    .waitForVisible('#iosType2')
-    .click('#iosType2')
+    .then(() => {
+      if (type === 'debug') {
+        return client
+          .waitForVisible('#iosType2')
+          .click('#iosType2');
+      } else {
+        return client
+          .waitForVisible('#iosType1')
+          .click('#iosType1');
+      }
+    })
     .waitForVisible('#iosPassphrase')
     .setValue('#iosPassphrase', pass)
     .pause(2000);
@@ -121,7 +135,7 @@ function setupPushIOS(p12, pass) {
 function createCredBundleIOS(clientApp) {
   return init()
     .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/credentials`)
-    .then(() => (login(config.username, config.password)))
+    .then(() => login(config.username, config.password))
     .waitForVisible('#new-bundle-btn')
     .click('#new-bundle-btn')
     .waitForVisible('.platform-selector [data-id="ios"]')
@@ -148,7 +162,7 @@ function createCredBundleIOS(clientApp) {
 function sendPushNotification(clientApp) {
   return init()
     .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
-    .then(() => (login(config.username, config.password)))
+    .then(() => login(config.username, config.password))
     .then(waitForDeviceRegistered)
     .waitForVisible('#send-notification-btn')
     .click('#send-notification-btn')
@@ -176,7 +190,7 @@ function waitForDeviceRegistered() {
 function createHelloWorldProject(name) {
   return init()
     .url(`${config.host}/#projects/new`)
-    .then(() => (login(config.username, config.password)))
+    .then(() => login(config.username, config.password))
     .waitForVisible('.search-query')
     .setValue('.search-query', 'hello')
     .waitForVisible('.choose-template')
@@ -203,22 +217,22 @@ function createHelloWorldProject(name) {
 function setSAMLVariables(clientApp, samlConfig) {
   return init()
     .url(`${config.host}/#/services/${clientApp.service.guid}/apps/${clientApp.serviceId}/environment_variables`)
-    .then(() => (login(config.username, config.password)))
+    .then(() => login(config.username, config.password))
     .pause(10000)
-    .then(() => (selectEnvironment(clientApp.environmentName)))
-    .then(() => (addVariable('SAML_ENTRY_POINT', samlConfig.entryPoint)))
-    .then(() => (addVariable('SAML_AUTH_CONTEXT', samlConfig.authContext)))
-    .then(() => (addVariable('SAML_CERT', samlConfig.cert)))
-    .then(() => (pushVariables()))
+    .then(() => selectEnvironment(clientApp.environmentName))
+    .then(() => addVariable('SAML_ENTRY_POINT', samlConfig.entryPoint))
+    .then(() => addVariable('SAML_AUTH_CONTEXT', samlConfig.authContext))
+    .then(() => addVariable('SAML_CERT', samlConfig.cert))
+    .then(() => pushVariables())
     .end();
 }
 
 function getSAMLExampleUrl(clientApp) {
   return init()
     .url(`${config.host}/#/services/${clientApp.service.guid}/apps/${clientApp.serviceId}/preview`)
-    .then(() => (login(config.username, config.password)))
+    .then(() => login(config.username, config.password))
     .pause(10000)
-    .then(() => (selectEnvironment(this.environmentName)))
+    .then(() => selectEnvironment(this.environmentName))
     .waitForVisible('.cloud-url')
     .getText('.cloud-url')
     .then(samlExampleUrl => {
@@ -241,13 +255,15 @@ function getSAMLIssuer(clientApp) {
 function associateService(clientApp) {
   return init()
     .url(`${config.host}/#/projects/${clientApp.project.guid}/apps`)
-    .then(() => (login(config.username, config.password)))
+    .then(() => login(config.username, config.password))
     .waitForVisible('.associate_services')
     .pause(5000)
+    .timeouts('implicit', 1000)
     .element('#connectors_list').isVisible(`.item_title*=${clientApp.service.title}`)
     .then(associated => {
       if (!associated) {
         return client
+          .timeouts('implicit', implicitTimeout)
           .click('.associate_services')
           .waitForVisible(`div.title=${clientApp.project.title}`)
           .click(`div.title=${clientApp.project.title}`)
@@ -261,17 +277,20 @@ function associateService(clientApp) {
 function associateSAML(clientApp) {
   return init()
     .url(`${config.host}/#/projects/${clientApp.project.guid}/apps/${clientApp.cloudApp.guid}/environment_variables`)
-    .then(() => (login(config.username, config.password)))
-    .then(() => (selectEnvironment(clientApp.environmentName)))
+    .then(() => login(config.username, config.password))
+    .then(() => selectEnvironment(clientApp.environmentName))
     .pause(2000)
+    .timeouts('implicit', 1000)
     .element('#app-env-vars-list').isVisible('td=SAML_SERVICE')
     .then(visible => {
       if (visible) {
         return client
+          .timeouts('implicit', implicitTimeout)
           .element('#app-env-vars-list').click('td=SAML_SERVICE')
           .pause(2000);
       } else {
         return client
+          .timeouts('implicit', implicitTimeout)
           .waitForVisible('.add_env_var_btn')
           .click('.add_env_var_btn')
           .pause(2000)
@@ -285,7 +304,17 @@ function associateSAML(clientApp) {
     .waitForVisible('.save_env_var_btn')
     .click('.save_env_var_btn')
     .pause(2000)
-    .then(() => (pushVariables()))
+    .then(() => pushVariables())
+    .end();
+}
+
+function pullApp(clientApp) {
+  return init()
+    .url(`${config.host}/#/projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/editor`)
+    .then(() => login(config.username, config.password))
+    .waitForVisible('.gitpull_btn')
+    .click('.gitpull_btn')
+    .pause(2000)
     .end();
 }
 
@@ -305,5 +334,6 @@ module.exports = {
   getSAMLExampleUrl: getSAMLExampleUrl,
   getSAMLIssuer: getSAMLIssuer,
   associateService: associateService,
-  associateSAML: associateSAML
+  associateSAML: associateSAML,
+  pullApp: pullApp
 };

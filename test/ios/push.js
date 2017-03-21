@@ -19,7 +19,9 @@ function test() {
   });
 
   it('should receive notification', function() {
-
+    return self.driver
+      .sleep(10000)
+      .elementByName('test').text().should.become('test');
   });
 
 }

@@ -15,8 +15,8 @@ const plist = require('plist');
 
 class IOSClientApp extends ClientApp {
 
-  constructor(projectTemplateId, clientAppName, test, scheme, bundleId) {
-    super(projectTemplateId, clientAppName, 'ios', test);
+  constructor(projectTemplateId, clientAppName, test, cordova, scheme, bundleId) {
+    super(projectTemplateId, clientAppName, 'ios', test, cordova);
 
     this.scheme = scheme;
     this.bundleId = bundleId;
@@ -38,29 +38,30 @@ class IOSClientApp extends ClientApp {
 
   preparePush() {
     return this.changeBundleId()
-      .then(() => (studio.ios.enablePush(this)));
+      .then(() => studio.ios.enablePush(this));
   }
 
   changeBundleId() {
     const tempFolder = path.resolve(__dirname, '../temp');
     const pbxprojFile = path.resolve(tempFolder, this.scheme + '.xcodeproj', 'project.pbxproj');
     return rimraf(tempFolder)
-      .then(() => (git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master')))
+      .then(() => git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master'))
       .then(() => {
         const pbxproj = fs.readFileSync(pbxprojFile, 'utf8');
         const replaced = pbxproj.split(this.bundleId).join(config.ios.push[this.buildType].bundleId);
         fs.writeFileSync(pbxprojFile, replaced);
       })
-      .then(() => (git.add(`${this.scheme}.xcodeproj/project.pbxproj`, tempFolder)))
-      .then(() => (git.commit('Updated bundleId', tempFolder)))
-      .then(() => (git.push('origin', 'master', tempFolder)));
+      .then(() => git.add(`${this.scheme}.xcodeproj/project.pbxproj`, tempFolder))
+      .then(() => git.commit('Updated bundleId', tempFolder))
+      .then(() => git.push('origin', 'master', tempFolder))
+      .then(() => studio.pullApp(this));
   }
 
   allowArbitraryLoads() {
     const tempFolder = path.resolve(__dirname, '../temp');
     const plistFile = path.resolve(tempFolder, this.scheme, `${this.scheme}-Info.plist`);
     return rimraf(tempFolder)
-      .then(() => (git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master')))
+      .then(() => git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master'))
       .then(() => {
         const plistData = plist.parse(fs.readFileSync(plistFile, 'utf8'));
         plistData.NSAppTransportSecurity = {
@@ -68,9 +69,10 @@ class IOSClientApp extends ClientApp {
         };
         fs.writeFileSync(plistFile, plist.build(plistData));
       })
-      .then(() => (git.add(`${this.scheme}/${this.scheme}-Info.plist`, tempFolder)))
-      .then(() => (git.commit('Allowed arbitrary loads', tempFolder)))
-      .then(() => (git.push('origin', 'master', tempFolder)));
+      .then(() => git.add(`${this.scheme}/${this.scheme}-Info.plist`, tempFolder))
+      .then(() => git.commit('Allowed arbitrary loads', tempFolder))
+      .then(() => git.push('origin', 'master', tempFolder))
+      .then(() => studio.pullApp(this));
   }
 
   findDevice() {
@@ -113,9 +115,9 @@ class IOSClientApp extends ClientApp {
         this.build = build;
         this.buildZip = path.resolve(__dirname, '..', build[1].download.file);
       })
-      .then(() => (rimraf(tempFolder)))
-      .then(() => (fs.mkdirSync(tempFolder)))
-      .then(() => (unzip(this.buildZip, tempFolder)))
+      .then(() => rimraf(tempFolder))
+      .then(() => fs.mkdirSync(tempFolder))
+      .then(() => unzip(this.buildZip, tempFolder))
       .then(() => {
         const appfile = fs.readdirSync(tempFolder)[0];
         const ext = path.extname(appfile);
