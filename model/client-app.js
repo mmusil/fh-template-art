@@ -19,7 +19,7 @@ class ClientApp {
 
   constructor(projectTemplateId, clientAppName, buildPlatform, test, cordova) {
     this.projectTemplateId = projectTemplateId;
-    this.clientAppName = clientAppName;
+    this.name = clientAppName;
     this.buildPlatform = buildPlatform;
     this.test = test.bind(this);
     this.push = projectTemplateId === 'pushstarter_project';
