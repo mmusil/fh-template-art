@@ -24,10 +24,14 @@ class ProjectPreparer {
     return this._tryToReuseExisting()
       .then(reused => {
         if (!reused && !this.stop) {
-          return this._create();
+          return this._create()
+            .then(this.deployCloudApp);
         }
       })
-      .then(() => this.details);
+      .then(() => {
+        this.clientApp.project = this.details;
+        this.clientApp.cloudApp = this.cloudApp;
+      });
   }
 
   _create() {
@@ -44,7 +48,7 @@ class ProjectPreparer {
       fhc.projectCreate(projectName, this.templateId),
       config.retries
     ).then(project => {
-      this.details = project;
+      this._storeDetails(project);
     });
   }
 
@@ -63,7 +67,7 @@ class ProjectPreparer {
       .then(result => {
         reusable = result;
 
-        if (!reusable) {
+        if (reusable.length === 0) {
           return false;
         }
 
@@ -83,27 +87,24 @@ class ProjectPreparer {
       });
   }
 
-  _filterReusable() {
-    return fhc.projectsListNoApps()
-      .then(projects => {
-        const suitableProjects = projects.filter(project => {
-          const templateMatch = project.jsonTemplateId === this.projectTemplateId;
-          const prefixMatch = project.title.startsWith(config.prefix);
-          return templateMatch && prefixMatch;
-        });
+  _filterReusable(projects) {
+    const suitableProjects = projects.filter(project => {
+      const templateMatch = project.jsonTemplateId === this.projectTemplateId;
+      const prefixMatch = project.title.startsWith(config.prefix);
+      return templateMatch && prefixMatch;
+    });
 
-        return async.sequence(
-          suitableProjects,
-          project => fhc.projectRead(project.guid)
-            .then(projectDetails => {
-              project.apps = projectDetails.apps;
-            })
-        ).then(() => suitableProjects.filter(project =>
-          project.apps.find(app =>
-            app.title === this.clientApp.name
-          )
-        ));
-      });
+    return async.sequence(
+      suitableProjects,
+      project => fhc.projectRead(project.guid)
+        .then(projectDetails => {
+          project.apps = projectDetails.apps;
+        })
+    ).then(() => suitableProjects.filter(project =>
+      project.apps.find(app =>
+        app.title === this.clientApp.name
+      )
+    ));
   }
 
   _findRunningCloudApp(projects) {
