@@ -5,7 +5,7 @@ const fhc = require('../utils/fhc');
 const config = require('../config/config');
 const studio = require('../utils/studio');
 
-class ProjectPreparer {
+class Project {
 
   constructor(clientApp) {
     this.clientApp = clientApp;
@@ -129,4 +129,4 @@ class ProjectPreparer {
 
 }
 
-module.exports = ProjectPreparer;
+module.exports = Project;
