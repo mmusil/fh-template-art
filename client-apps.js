@@ -15,13 +15,13 @@ const clientApps = [
   // new IOSClientApp('pushstarter_project', 'Simple iOS (Swift) Push App', require('./test/ios/push'), false, 'PushStarter', 'org.aerogear.helloworldpush'),
   // new IOSClientApp('pushstarter_project', 'Simple iOS (Objective-C) Push App', require('./test/ios/push'), false, 'PushStarter', 'org.aerogear.helloworldpush'),
   // new IOSClientApp('saml_project', 'SAML iOS (Swift)', require('./test/ios/saml')),
-  // new IOSClientApp('saml_project', 'SAML iOS (Objective-C)', require('./test/ios/saml'), 'saml-ios-app')
+  // new IOSClientApp('saml_project', 'SAML iOS (Objective-C)', require('./test/ios/saml'), false, 'saml-ios-app'),
 
   // Cordova Android
 
   // Cordova iOS
-  // new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true)
-  // new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
+  new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
+  new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
   new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
 ];
 

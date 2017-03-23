@@ -13,7 +13,6 @@ class AndroidClientApp extends ClientApp {
     this.prepareSAMLPlatSpecific = this.prepareSAMLPlatSpecific.bind(this);
     this.preparePush = this.preparePush.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
-    this.findDevice = this.findDevice.bind(this);
     this.build = this.build.bind(this);
   }
 
@@ -26,10 +25,6 @@ class AndroidClientApp extends ClientApp {
   }
 
   createCredBundle() {
-
-  }
-
-  findDevice() {
 
   }
 

@@ -4,6 +4,7 @@ const async = require('../utils/async');
 const fhc = require('../utils/fhc');
 const config = require('../config/config');
 const studio = require('../utils/studio');
+const SAML = require('./saml');
 
 class Project {
 
@@ -21,55 +22,73 @@ class Project {
   }
 
   prepare() {
+    console.log('Preparing project');
+
     return this._tryToReuseExisting()
       .then(reused => {
-        if (!reused && !this.stop) {
+        if (!reused) {
           return this._create()
-            .then(this.deployCloudApp);
+            .then(this._deployCloudApp);
         }
       })
       .then(() => {
         this.clientApp.project = this.details;
         this.clientApp.cloudApp = this.cloudApp;
+      })
+      .then(() => {
+        if (this.templateId === 'saml_project') {
+          const saml = new SAML(this);
+
+          return saml.prepare();
+        }
       });
   }
 
   _create() {
+    console.log('Creating project');
+
     const projectName = config.prefix + new Date().getTime();
 
     if (this.templateId === 'hello_world_project') {
-      this.stop = true;
-
-      return studio.createHelloWorldProject(projectName)
-        .then(this.prepare);
+      return this._createHelloWorld(projectName);
     }
 
     return async.retry(
-      fhc.projectCreate(projectName, this.templateId),
+      () => fhc.projectCreate(projectName, this.templateId),
       config.retries
-    ).then(project => {
-      this._storeDetails(project);
-    });
+    ).then(this._storeDetails);
+  }
+
+  _createHelloWorld(projectName) {
+    return studio.createHelloWorldProject(projectName)
+      .then(fhc.projectsListNoApps)
+      .then(projects =>
+        projects.find(project => project.title === projectName)
+      )
+      .then(project =>
+        fhc.projectRead(project.guid)
+      )
+      .then(this._storeDetails);
   }
 
   _deployCloudApp() {
+    console.log('Deploying cloudApp');
+
     return async.retry(
-      fhc.appDeploy(this.cloudApp.guid, config.environment),
+      () => fhc.appDeploy(this.cloudApp.guid, config.environment),
       config.retries
     );
   }
 
   _tryToReuseExisting() {
+    console.log('Trying to reuse existing project');
+
     let reusable;
 
     return fhc.projectsListNoApps()
       .then(this._filterReusable)
       .then(result => {
         reusable = result;
-
-        if (reusable.length === 0) {
-          return false;
-        }
 
         return this._findRunningCloudApp(reusable);
       })
@@ -78,6 +97,10 @@ class Project {
           this._storeDetails(projectWithRunningCloudApp);
 
           return true;
+        }
+
+        if (reusable.length === 0) {
+          return false;
         }
 
         this._storeDetails(reusable[0]);
@@ -89,7 +112,7 @@ class Project {
 
   _filterReusable(projects) {
     const suitableProjects = projects.filter(project => {
-      const templateMatch = project.jsonTemplateId === this.projectTemplateId;
+      const templateMatch = project.jsonTemplateId === this.templateId;
       const prefixMatch = project.title.startsWith(config.prefix);
       return templateMatch && prefixMatch;
     });

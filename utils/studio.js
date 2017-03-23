@@ -2,8 +2,9 @@
 
 const webdriverio = require('webdriverio');
 const options = { desiredCapabilities: { browserName: 'chrome' } };
-const client = webdriverio.remote(options);
 const config = require('../config/config');
+
+let client;
 
 const implicitTimeout = 60000;
 
@@ -52,6 +53,7 @@ function pushVariables() {
 }
 
 function init() {
+  client = webdriverio.remote(options);
   return client
     .init()
     .setViewportSize({ width: 1024, height: 768 })
@@ -60,7 +62,7 @@ function init() {
 
 function enablePushIOS(clientApp) {
   return init()
-    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
+    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.details.guid}/push`)
     .then(() => login(config.username, config.password))
     .waitForVisible('#ups-app-detail-root button')
     .timeouts('implicit', 1000)
@@ -124,7 +126,7 @@ function setupPushIOS(p12, pass, type) {
 
 function createCredBundleIOS(clientApp) {
   return init()
-    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/credentials`)
+    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.details.guid}/credentials`)
     .then(() => login(config.username, config.password))
     .waitForVisible('#new-bundle-btn')
     .click('#new-bundle-btn')
@@ -151,7 +153,7 @@ function createCredBundleIOS(clientApp) {
 
 function sendPushNotification(clientApp) {
   return init()
-    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/push`)
+    .url(`${config.host}/#projects/${clientApp.project.guid}/apps/${clientApp.details.guid}/push`)
     .then(() => login(config.username, config.password))
     .then(waitForDeviceRegistered)
     .waitForVisible('#send-notification-btn')
@@ -198,65 +200,66 @@ function createHelloWorldProject(name) {
     .moveToObject('.template-selector-footer')
     .waitForVisible('.create-button')
     .click('.create-button')
+    .pause(30000)
     .waitForVisible('.bar-success')
     .waitForVisible('.finish')
     .click('.finish')
     .end();
 }
 
-function setSAMLVariables(clientApp, samlConfig) {
+function setSAMLVariables(saml) {
   return init()
-    .url(`${config.host}/#/services/${clientApp.service.guid}/apps/${clientApp.serviceId}/environment_variables`)
+    .url(`${config.host}/#/services/${saml.service.guid}/apps/${saml.cloudApp.guid}/environment_variables`)
     .then(() => login(config.username, config.password))
     .pause(10000)
-    .then(() => selectEnvironment(clientApp.environmentName))
-    .then(() => addVariable('SAML_ENTRY_POINT', samlConfig.entryPoint))
-    .then(() => addVariable('SAML_AUTH_CONTEXT', samlConfig.authContext))
-    .then(() => addVariable('SAML_CERT', samlConfig.cert))
+    .then(() => selectEnvironment(saml.environment))
+    .then(() => addVariable('SAML_ENTRY_POINT', config.saml.entryPoint))
+    .then(() => addVariable('SAML_AUTH_CONTEXT', config.saml.authContext))
+    .then(() => addVariable('SAML_CERT', config.saml.cert))
     .then(() => pushVariables())
     .end();
 }
 
-function getSAMLExampleUrl(clientApp) {
+function getSAMLExampleUrl(saml) {
   return init()
-    .url(`${config.host}/#/services/${clientApp.service.guid}/apps/${clientApp.serviceId}/preview`)
+    .url(`${config.host}/#/services/${saml.service.guid}/apps/${saml.cloudApp.guid}/preview`)
     .then(() => login(config.username, config.password))
     .pause(10000)
-    .then(() => selectEnvironment(clientApp.environmentName))
+    .then(() => selectEnvironment(saml.environment))
     .waitForVisible('.cloud-url')
     .getText('.cloud-url')
     .then(samlExampleUrl => {
-      clientApp.samlExampleUrl = samlExampleUrl;
+      saml.exampleUrl = samlExampleUrl;
     })
     .end();
 }
 
-function getSAMLIssuer(clientApp) {
+function getSAMLIssuer(saml) {
   return init()
-    .url(clientApp.samlExampleUrl)
+    .url(saml.exampleUrl)
     .waitForVisible('tbody tr:first-child td:nth-child(2)')
     .getText('tbody tr:first-child td:nth-child(2)')
     .then(issuer => {
-      clientApp.samlIssuer = issuer;
+      saml.issuer = issuer;
     })
     .end();
 }
 
-function associateService(clientApp) {
+function associateService(project) {
   return init()
-    .url(`${config.host}/#/projects/${clientApp.project.guid}/apps`)
+    .url(`${config.host}/#/projects/${project.details.guid}/apps`)
     .then(() => login(config.username, config.password))
     .waitForVisible('.associate_services')
     .pause(5000)
     .timeouts('implicit', 1000)
-    .element('#connectors_list').isVisible(`.item_title*=${clientApp.service.title}`)
+    .element('#connectors_list').isVisible(`.item_title*=${project.saml.service.title}`)
     .then(associated => {
       if (!associated) {
         return client
           .timeouts('implicit', implicitTimeout)
           .click('.associate_services')
-          .waitForVisible(`div.title=${clientApp.project.title}`)
-          .click(`div.title=${clientApp.project.title}`)
+          .waitForVisible(`div.title=${project.saml.service.title}`)
+          .click(`div.title=${project.saml.service.title}`)
           .waitForVisible('.save_btn')
           .click('.save_btn');
       }
@@ -264,11 +267,11 @@ function associateService(clientApp) {
     .end();
 }
 
-function associateSAML(clientApp) {
+function associateSAML(project, environment) {
   return init()
-    .url(`${config.host}/#/projects/${clientApp.project.guid}/apps/${clientApp.cloudApp.guid}/environment_variables`)
+    .url(`${config.host}/#/projects/${project.details.guid}/apps/${project.cloudApp.guid}/environment_variables`)
     .then(() => login(config.username, config.password))
-    .then(() => selectEnvironment(clientApp.environmentName))
+    .then(() => selectEnvironment(environment))
     .pause(2000)
     .timeouts('implicit', 1000)
     .element('#app-env-vars-list').isVisible('td=SAML_SERVICE')
@@ -290,7 +293,7 @@ function associateSAML(clientApp) {
     })
     .waitForVisible('#env_var_value')
     .clearElement('#env_var_value')
-    .setValue('#env_var_value', clientApp.serviceId)
+    .setValue('#env_var_value', project.saml.serviceId)
     .waitForVisible('.save_env_var_btn')
     .click('.save_env_var_btn')
     .pause(2000)
@@ -300,7 +303,7 @@ function associateSAML(clientApp) {
 
 function pullApp(clientApp) {
   return init()
-    .url(`${config.host}/#/projects/${clientApp.project.guid}/apps/${clientApp.clientApp.guid}/editor`)
+    .url(`${config.host}/#/projects/${clientApp.project.guid}/apps/${clientApp.details.guid}/editor`)
     .then(() => login(config.username, config.password))
     .waitForVisible('.gitpull_btn')
     .click('.gitpull_btn')
@@ -320,10 +323,12 @@ module.exports = {
   },
   sendPushNotification: sendPushNotification,
   createHelloWorldProject: createHelloWorldProject,
-  setSAMLVariables: setSAMLVariables,
-  getSAMLExampleUrl: getSAMLExampleUrl,
-  getSAMLIssuer: getSAMLIssuer,
-  associateService: associateService,
-  associateSAML: associateSAML,
+  saml: {
+    setVariables: setSAMLVariables,
+    getExampleUrl: getSAMLExampleUrl,
+    getIssuer: getSAMLIssuer,
+    associateService: associateService,
+    associateSAML: associateSAML
+  },
   pullApp: pullApp
 };

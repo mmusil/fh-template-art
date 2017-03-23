@@ -18,17 +18,18 @@ function sequence(list, iteratee) {
 function find(list, iteratee) {
   let found = null;
 
-  return list.reduce((p, item) => {
-    if (found) {
-      return p;
-    } else {
-      return p.then(() =>
-        iteratee(item)
-      ).then(result => {
-        found = result;
-      });
-    }
-  }, Promise.resolve()
+  return list.reduce((p, item) =>
+    p.then(() => {
+      if (!found) {
+        return iteratee(item)
+          .then(result => {
+            if (result) {
+              found = item;
+            }
+          });
+      }
+    })
+  , Promise.resolve()
   ).then(() =>
     found
   );

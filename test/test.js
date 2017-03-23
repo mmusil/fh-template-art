@@ -17,19 +17,18 @@ describe('Tests for client apps', function() {
 
   clientApps.forEach(clientApp => {
     config.buildTypes[clientApp.platform].forEach(buildType => {
-      describe(`Test for ${clientApp.clientAppName} ${buildType}`, function() {
+      describe(`Test for ${clientApp.name} ${buildType}`, function() {
 
         before(function() {
           clientApp.buildType = buildType;
-          // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490088929067.app');
+          // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490196092080.app');
 
           const project = new Project(clientApp);
 
           // return Promise.resolve()
           return project.prepare()
-            .then(clientApp.prepareEnvironment)
+            .then(clientApp.prepare)
             .then(clientApp.build)
-            .then(clientApp.findDevice)
             .then(clientApp.initAppium);
         });
 
