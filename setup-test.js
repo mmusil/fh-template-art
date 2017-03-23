@@ -32,7 +32,7 @@ const settings = {};
 if (program.platform === 'all') {
   settings.platforms = ['android', 'ios'];
 } else {
-  settings.platforms = program.platform;
+  settings.platforms = [program.platform];
 }
 
 if (program.type === 'all') {
