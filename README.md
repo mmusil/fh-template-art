@@ -33,6 +33,7 @@ For every client app it tests it will:
 For iOS:
 * Mac
 * Xcode
+* certificates, keys, provisioning profiles in `fixtures` folder
 * correct values in `config/credentials.json`
 
 For iOS push testing:
