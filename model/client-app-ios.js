@@ -1,7 +1,6 @@
 "use strict";
 
 const ClientApp = require('./client-app');
-const exec = require('../utils/exec');
 const path = require('path');
 const studio = require('../utils/studio');
 const config = require('../config/config');
@@ -9,8 +8,6 @@ const fhc = require('../utils/fhc');
 const rimraf = require('../utils/rimraf');
 const fs = require('fs');
 const unzip = require('../utils/unzip');
-const appiumConfig = require('../config/appium');
-const git = require('../utils/git');
 const plist = require('plist');
 
 class IOSClientApp extends ClientApp {
@@ -21,41 +18,30 @@ class IOSClientApp extends ClientApp {
     this.scheme = scheme;
     this.bundleId = bundleId;
 
-    this.prepareSAMLPlatSpecific = this.prepareSAMLPlatSpecific.bind(this);
+    this.prepareSAML = this.prepareSAML.bind(this);
     this.preparePush = this.preparePush.bind(this);
     this.editFile = this.editFile.bind(this);
     this.changeBundleId = this.changeBundleId.bind(this);
     this.allowArbitraryLoads = this.allowArbitraryLoads.bind(this);
     this.allowArbitraryLoadsCordova = this.allowArbitraryLoadsCordova.bind(this);
-    this.findDevice = this.findDevice.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.build = this.build.bind(this);
   }
 
-  prepareSAMLPlatSpecific() {
-    if (this.clientAppName === 'SAML iOS (Objective-C)') {
+  prepareSAML() {
+    if (this.name === 'SAML iOS (Objective-C)') {
       return this.allowArbitraryLoads();
     }
-    if (this.clientAppName === 'SAML Client') {
+    if (this.name === 'SAML Client') {
       return this.allowArbitraryLoadsCordova();
     }
   }
 
   preparePush() {
+    console.log('Preparing push');
+
     return this.changeBundleId()
       .then(() => studio.ios.enablePush(this));
-  }
-
-  editFile(fileName, editFunc) {
-    const tempFolder = path.resolve(__dirname, '../temp');
-    const file = path.resolve(tempFolder, fileName);
-    return rimraf(tempFolder)
-      .then(() => git.clone(this.clientApp.internallyHostedRepoUrl, tempFolder, 'master'))
-      .then(() => editFunc(file))
-      .then(() => git.add(fileName, tempFolder))
-      .then(() => git.commit('Updated bundleId', tempFolder))
-      .then(() => git.push('origin', 'master', tempFolder))
-      .then(() => studio.pullApp(this));
   }
 
   changeBundleId() {
@@ -86,17 +72,6 @@ class IOSClientApp extends ClientApp {
     });
   }
 
-  findDevice() {
-    return exec('system_profiler SPUSBDataType')
-      .then(output => {
-        const deviceId = output.stdout.match(/Serial Number: ([\w\d]{40})/);
-        if (!deviceId) {
-          throw new Error('No connected iOS device found');
-        }
-        appiumConfig.ios.udid = deviceId[1];
-      });
-  }
-
   createCredBundle() {
     this.credentials = {
       key: path.resolve(__dirname, '..', this.credConfig.key),
@@ -108,13 +83,16 @@ class IOSClientApp extends ClientApp {
   }
 
   build() {
+    console.log('Building client app');
+
     const tempFolder = path.resolve(__dirname, '../temp');
+
     return fhc.buildIOS(
         this.project.guid,
-        this.clientApp.guid,
+        this.details.guid,
         this.cloudApp.guid,
-        this.environment,
-        this.buildPlatform,
+        config.environment,
+        this.platform,
         this.buildType,
         this.credConfig.keyPassword,
         this.credConfig.certPassword,

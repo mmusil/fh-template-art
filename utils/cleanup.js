@@ -7,6 +7,9 @@ function cleanup() {
   if (!config.cleanup) {
     return;
   }
+
+  console.log('Cleanup');
+
   return fhc.projectsListNoApps()
     .then(projects => {
       const projectsToDelete = projects.filter(project => project.title.startsWith(config.prefix));

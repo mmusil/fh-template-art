@@ -4,6 +4,7 @@ const clientApps = require('../client-apps');
 const config = require('../config/config');
 const fhc = require('../utils/fhc');
 const cleanup = require('../utils/cleanup');
+const Project = require('../model/project');
 
 describe('Tests for client apps', function() {
 
@@ -14,26 +15,30 @@ describe('Tests for client apps', function() {
       .then(cleanup);
   });
 
-  clientApps.forEach(function(clientApp) {
-    describe(`Test for ${clientApp.clientAppName}`, function() {
+  clientApps.forEach(clientApp => {
+    config.buildTypes[clientApp.platform].forEach(buildType => {
+      describe(`Test for ${clientApp.name} ${buildType}`, function() {
 
-      before(function() {
-        clientApp.buildType = config.buildType[clientApp.buildPlatform];
-        // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490088929067.app');
+        before(function() {
+          clientApp.buildType = buildType;
+          // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490196092080.app');
 
-        // return Promise.resolve()
-        return clientApp.prepareEnvironment()
-          .then(clientApp.build)
-          .then(clientApp.findDevice)
-          .then(clientApp.initAppium);
+          const project = new Project(clientApp);
+
+          // return Promise.resolve()
+          return project.prepare()
+            .then(clientApp.prepare)
+            .then(clientApp.build)
+            .then(clientApp.initAppium);
+        });
+
+        after(function() {
+          return clientApp.finishAppium();
+        });
+
+        clientApp.test();
+
       });
-
-      after(function() {
-        return clientApp.finishAppium();
-      });
-
-      clientApp.test();
-
     });
   });
 

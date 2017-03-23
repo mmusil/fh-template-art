@@ -13,7 +13,8 @@ const config = {
     deviceName: 'iPhone 7',
     xcodeOrgId: '75B468G5L7',
     xcodeSigningId: 'iPhone Developer',
-    fullReset: true
+    fullReset: true,
+    udid: '11797003d0ab2b74430af7f38fbf1b0f5b2a723d'
   },
   android: {
     browserName: '',
