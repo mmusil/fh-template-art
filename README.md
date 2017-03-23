@@ -33,6 +33,7 @@ For every client app it tests it will:
 For iOS:
 * Mac
 * Xcode
+* correct values in `config/credentials.json`
 
 For iOS push testing:
 * Apple Developer Program account
@@ -40,12 +41,14 @@ For iOS push testing:
 For SAML testing:
 * [running SAML service](https://github.com/fheng/help/blob/master/developer_guides/clientsdk/5.clientsdk_templates.md)
 * [oc tool](https://docs.openshift.com/enterprise/3.1/cli_reference/get_started_cli.html)
+* correct values in `config/saml.json`
 
 ## Running the tests
 
 * start appium in separate console
 * `npm install`
-* add correct values to config/config.js and config/appium.js
+* add correct values to `config/appium.js`
+* `npm run setup -- common`
 * `npm start`
 
 ## Troubleshooting
