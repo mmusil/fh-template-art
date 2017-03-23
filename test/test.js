@@ -24,9 +24,9 @@ describe('Tests for client apps', function() {
         );
       }
 
-      if (platform === 'ios' && type === 'native' && testConfig.iosType) {
+      if (platform === 'ios' && type === 'native' && testConfig.iostype) {
         apps = apps.filter(app =>
-          app.name.includes(testConfig.iosType)
+          app.name.includes(testConfig.iostype)
         );
       }
 

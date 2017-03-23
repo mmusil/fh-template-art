@@ -102,8 +102,8 @@ class IOSClientApp extends ClientApp {
         config.environment,
         this.platform,
         this.buildType,
-        this.credConfig.keyPassword,
-        this.credConfig.certPassword,
+        this.credConfig.password,
+        this.credConfig.password,
         'true',
         this.credBundle.id,
         this.connection.tag
