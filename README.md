@@ -24,7 +24,8 @@ For every client app it tests it will:
 * [Appium](http://appium.io/)
   * make sure to install it in an environment with node version >=6
   * [installation guide for Mac](http://appium.io/slate/en/master/?ruby#running-appium-on-mac-os-x)
-  * [running appium on real iOS devices](http://appium.io/slate/en/master/?ruby#appium-on-real-ios-devices)
+  * [running Appium on real iOS devices](http://appium.io/slate/en/master/?ruby#appium-on-real-ios-devices)
+  * [Cordova on real iOS devices](http://appium.io/slate/en/master/?ruby#execution-against-a-real-ios-device)
   * if you are still not able to run tests on real iOS devices, there can be problem with signing of WDA - open WDA project in Xcode and set your team
 * make sure to run this tool with node version >=0.10 <= 4.4
 * iOS and Android physical devices connected to your computer
