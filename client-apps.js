@@ -1,11 +1,12 @@
 "use strict";
 
-// const AndroidClientApp = require('./model/client-app-android');
-const IOSClientApp = require('./model/client-app-ios');
+const AndroidClientApp = require('./model/client-app-android');
+// const IOSClientApp = require('./model/client-app-ios');
 
 const clientApps = [
   // Android native
-  // new AndroidClientApp('welcome_project', 'Welcome Project Android Gradle', require('./test/android/welcome')),
+  new AndroidClientApp('hello_world_project', 'Helloworld Native Android Gradle App', require('./test/android/helloworld')),
+  new AndroidClientApp('welcome_project', 'Welcome Project Android Gradle', require('./test/android/welcome')),
 
   // iOS native
   // new IOSClientApp('hello_world_project', 'Native iOS (Swift) hello world app', require('./test/ios/helloworld')),
@@ -20,9 +21,9 @@ const clientApps = [
   // Cordova Android
 
   // Cordova iOS
-  new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
-  new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
-  new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
+  // new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
+  // new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
+  // new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
 ];
 
 module.exports = clientApps;

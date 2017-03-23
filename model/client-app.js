@@ -29,6 +29,7 @@ class ClientApp {
     this.finishAppium = this.finishAppium.bind(this);
     this.prepareCredBundle = this.prepareCredBundle.bind(this);
     this.prepare = this.prepare.bind(this);
+    this.editFile = this.editFile.bind(this);
     this.findSuitableCredBundle = this.findSuitableCredBundle.bind(this);
     this.sendPushNotification = this.sendPushNotification.bind(this);
     this.prepareConnection = this.prepareConnection.bind(this);

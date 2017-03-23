@@ -20,7 +20,6 @@ class IOSClientApp extends ClientApp {
 
     this.prepareSAML = this.prepareSAML.bind(this);
     this.preparePush = this.preparePush.bind(this);
-    this.editFile = this.editFile.bind(this);
     this.changeBundleId = this.changeBundleId.bind(this);
     this.allowArbitraryLoads = this.allowArbitraryLoads.bind(this);
     this.allowArbitraryLoadsCordova = this.allowArbitraryLoadsCordova.bind(this);

@@ -4,19 +4,20 @@ const fhc = require('../utils/fhc');
 const fs = require('fs');
 const ClientApp = require('./client-app');
 const path = require('path');
+const config = require('../config/config');
 
 class AndroidClientApp extends ClientApp {
 
   constructor(projectTemplateId, clientAppName, test, cordova) {
     super(projectTemplateId, clientAppName, 'android', test, cordova);
 
-    this.prepareSAMLPlatSpecific = this.prepareSAMLPlatSpecific.bind(this);
+    this.prepareSAML = this.prepareSAML.bind(this);
     this.preparePush = this.preparePush.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.build = this.build.bind(this);
   }
 
-  prepareSAMLPlatSpecific() {
+  prepareSAML() {
 
   }
 
@@ -29,12 +30,14 @@ class AndroidClientApp extends ClientApp {
   }
 
   build() {
+    console.log('Building client app');
+
     return fhc.buildAndroidDebug(
         this.project.guid,
-        this.clientApp.guid,
+        this.details.guid,
         this.cloudApp.guid,
-        this.environment,
-        this.buildPlatform,
+        config.environment,
+        this.platform,
         this.buildType,
         'true',
         this.connection.tag
