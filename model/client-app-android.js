@@ -4,7 +4,7 @@ const fhc = require('../utils/fhc');
 const fs = require('fs');
 const ClientApp = require('./client-app');
 const path = require('path');
-const config = require('../config/config');
+const config = require('../config/common.json');
 
 class AndroidClientApp extends ClientApp {
 

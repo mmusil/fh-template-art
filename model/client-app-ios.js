@@ -3,13 +3,14 @@
 const ClientApp = require('./client-app');
 const path = require('path');
 const studio = require('../utils/studio');
-const config = require('../config/config');
+const config = require('../config/common.json');
 const fhc = require('../utils/fhc');
 const rimraf = require('../utils/rimraf');
 const fs = require('fs');
 const unzip = require('../utils/unzip');
 const plist = require('plist');
 const xml2js = require('../utils/xml2js');
+const credConfig = require('../config/credentials.json');
 
 class IOSClientApp extends ClientApp {
 
@@ -47,7 +48,7 @@ class IOSClientApp extends ClientApp {
   changeBundleId() {
     return this.editFile(`${this.scheme}.xcodeproj/project.pbxproj`, file => {
       const pbxproj = fs.readFileSync(file, 'utf8');
-      const replaced = pbxproj.split(this.bundleId).join(config.ios.push[this.buildType].bundleId);
+      const replaced = pbxproj.split(this.bundleId).join(credConfig.ios.push.bundleId);
       fs.writeFileSync(file, replaced);
     });
   }

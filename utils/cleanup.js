@@ -1,15 +1,9 @@
 "use strict";
 
-const config = require('../config/config');
+const config = require('../config/common.json');
 const fhc = require('./fhc');
 
 function cleanup() {
-  if (!config.cleanup) {
-    return;
-  }
-
-  console.log('Cleanup');
-
   return fhc.projectsListNoApps()
     .then(projects => {
       const projectsToDelete = projects.filter(project => project.title.startsWith(config.prefix));

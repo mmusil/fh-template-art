@@ -3,11 +3,12 @@
 const path = require('path');
 const rimraf = require('../utils/rimraf');
 const fhc = require('../utils/fhc');
-const config = require('../config/config');
+const config = require('../config/common.json');
 const async = require('../utils/async');
 const studio = require('../utils/studio');
 const fs = require('fs');
 const exec = require('../utils/exec');
+const samlConfig = require('../config/saml.json');
 
 class SAML {
 
@@ -127,7 +128,7 @@ class SAML {
 
     fs.mkdirSync(this.tempFolder);
 
-    return exec(`oc login ${config.saml.host} --username='${config.saml.username}' --password='${config.saml.password}'`)
+    return exec(`oc login ${samlConfig.host} --username='${samlConfig.username}' --password='${samlConfig.password}'`)
       .then(() => exec('oc project saml', this.tempFolder))
       .then(() => exec('oc get pods -o json', this.tempFolder))
       .then(pods => {

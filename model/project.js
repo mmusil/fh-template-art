@@ -2,7 +2,7 @@
 
 const async = require('../utils/async');
 const fhc = require('../utils/fhc');
-const config = require('../config/config');
+const config = require('../config/common.json');
 const studio = require('../utils/studio');
 const SAML = require('./saml');
 

@@ -5,13 +5,15 @@
   "scripts": {
     "start": "mocha --require mocha-steps",
     "prestart": "selenium-standalone install --config=config/selenium.js &>/dev/null && selenium-standalone start --config=config/selenium.js &>/dev/null &",
-    "poststart": "lsof -i tcp:4444 | grep LISTEN | awk '{print $2}' | xargs kill"
+    "poststart": "lsof -i tcp:4444 | grep LISTEN | awk '{print $2}' | xargs kill",
+    "setup": "node setup.js"
   },
   "author": "Jan Hellar <jhellar@redhat.com>",
   "license": "ISC",
   "dependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "commander": "^2.9.0",
     "extract-zip": "^1.6.0",
     "fh-fhc": "http://npm.skunkhenry.com/fh-fhc/-/fh-fhc-2.17.3-577.tgz",
     "mocha": "^3.2.0",

@@ -1,0 +1,8 @@
+{
+  "host": "",
+  "username": "",
+  "password": "",
+  "environment": "",
+  "prefix": "app-art-username-",
+  "retries": 3
+}

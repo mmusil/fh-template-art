@@ -1,7 +1,7 @@
 "use strict";
 
 const fhc = require('../utils/fhc');
-const config = require('../config/config');
+const config = require('../config/common.json');
 const wd = require('wd');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -13,6 +13,7 @@ const studio = require('../utils/studio');
 const git = require('../utils/git');
 const rimraf = require('../utils/rimraf');
 const path = require('path');
+const credConfig = require('../config/credentials.json');
 
 class ClientApp {
 
@@ -23,6 +24,7 @@ class ClientApp {
     this.test = test.bind(this);
     this.push = projectTemplateId === 'pushstarter_project';
     this.cordova = cordova;
+    this.buildType = 'debug';
 
     this.webviewContext = this.webviewContext.bind(this);
     this.initAppium = this.initAppium.bind(this);
@@ -90,8 +92,8 @@ class ClientApp {
     console.log('Preparing client app');
 
     this.credConfig = this.push ?
-      config[this.platform].push[this.buildType] :
-      config[this.platform][this.buildType];
+      credConfig[this.platform].push :
+      credConfig[this.platform];
 
     this.details = this.project.apps.find(app =>
       app.title === this.name

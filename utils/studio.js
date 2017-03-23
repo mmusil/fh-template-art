@@ -2,7 +2,8 @@
 
 const webdriverio = require('webdriverio');
 const options = { desiredCapabilities: { browserName: 'chrome' } };
-const config = require('../config/config');
+const config = require('../config/common.json');
+const samlConfig = require('../config/saml.json');
 
 let client;
 
@@ -213,9 +214,9 @@ function setSAMLVariables(saml) {
     .then(() => login(config.username, config.password))
     .pause(10000)
     .then(() => selectEnvironment(saml.environment))
-    .then(() => addVariable('SAML_ENTRY_POINT', config.saml.entryPoint))
-    .then(() => addVariable('SAML_AUTH_CONTEXT', config.saml.authContext))
-    .then(() => addVariable('SAML_CERT', config.saml.cert))
+    .then(() => addVariable('SAML_ENTRY_POINT', samlConfig.entryPoint))
+    .then(() => addVariable('SAML_AUTH_CONTEXT', samlConfig.authContext))
+    .then(() => addVariable('SAML_CERT', samlConfig.cert))
     .then(() => pushVariables())
     .end();
 }
