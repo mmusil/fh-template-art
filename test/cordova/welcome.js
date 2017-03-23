@@ -1,5 +1,7 @@
 "use strict";
 
+const studio = require('../../utils/studio');
+
 function test() {
 
   const self = this;
@@ -21,15 +23,20 @@ function test() {
   });
 
   it('should save value to Data Browser', function() {
+    const value = new Date().getTime();
+
     return self.driver
       .elementByCss('.data-browser').click()
       .sleep(2000)
-      .elementByCss('#nameField').sendKeys('test')
+      .elementByCss('#nameField').sendKeys(value)
       .elementByCss('.save-data').click()
       .sleep(3000)
       .elementByCss('.extra_response').text().should.become('Your data is now saved. Please go to studio and see your data using the Data Browser.')
       .elementByCss('.btn.back').click()
-      .sleep(2000);
+      .sleep(2000)
+      .then(() =>
+        studio.checkDataBrowser(self, value)
+      );
   });
 
   it('should get location', function() {

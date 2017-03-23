@@ -311,6 +311,25 @@ function pullApp(clientApp) {
     .end();
 }
 
+function checkDataBrowser(clientApp, value) {
+  return init()
+    .url(`${config.host}/#/projects/${clientApp.project.guid}/apps/${clientApp.cloudApp.guid}/databrowser`)
+    .then(() => login(config.username, config.password))
+    .then(() => selectEnvironment(clientApp.environment))
+    .waitForVisible('#databrowser_container h3')
+    .click('#databrowser_container h3')
+    .pause(4000)
+    .waitForVisible(`td=${value}`)
+    .waitForVisible('.btn-danger')
+    .click('.btn-danger')
+    .waitForVisible('.btn-trash-all-rows')
+    .click('.btn-trash-all-rows')
+    .pause(2000)
+    .waitForVisible('#modal-ok')
+    .click('#modal-ok')
+    .end();
+}
+
 module.exports = {
   login: login,
   selectEnvironment: selectEnvironment,
@@ -330,5 +349,6 @@ module.exports = {
     associateService: associateService,
     associateSAML: associateSAML
   },
-  pullApp: pullApp
+  pullApp: pullApp,
+  checkDataBrowser: checkDataBrowser
 };

@@ -99,6 +99,10 @@ class ClientApp {
 
     return this.prepareConnection()
       .then(this.prepareCredBundle)
+      .then(() => fhc.environmentRead(config.environment))
+      .then(env => {
+        this.environment = env.label;
+      })
       .then(() => {
         if (this.projectTemplateId === 'pushstarter_project') {
           return this.preparePush();

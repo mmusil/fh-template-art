@@ -25,8 +25,8 @@ const clientApps = [
 
   // Cordova iOS
   // new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
-  // new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
-  new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
+  new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
+  // new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
 ];
 
 module.exports = clientApps;
