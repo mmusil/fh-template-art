@@ -40,7 +40,6 @@ For iOS push testing:
 For SAML testing:
 * [running SAML service](https://github.com/fheng/help/blob/master/developer_guides/clientsdk/5.clientsdk_templates.md)
 * [oc tool](https://docs.openshift.com/enterprise/3.1/cli_reference/get_started_cli.html)
-* you have to be logged in to the OpenShift where SAML service is running (using `oc login ...`)
 
 ## Running the tests
 
