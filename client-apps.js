@@ -5,8 +5,8 @@ const AndroidClientApp = require('./model/client-app-android');
 
 const clientApps = [
   // Android native
-  new AndroidClientApp('hello_world_project', 'Helloworld Native Android Gradle App', require('./test/android/helloworld')),
-  new AndroidClientApp('welcome_project', 'Welcome Project Android Gradle', require('./test/android/welcome')),
+  // new AndroidClientApp('hello_world_project', 'Helloworld Native Android Gradle App', require('./test/android/helloworld')),
+  // new AndroidClientApp('welcome_project', 'Welcome Project Android Gradle', require('./test/android/welcome')),
 
   // iOS native
   // new IOSClientApp('hello_world_project', 'Native iOS (Swift) hello world app', require('./test/ios/helloworld')),
@@ -19,6 +19,9 @@ const clientApps = [
   // new IOSClientApp('saml_project', 'SAML iOS (Objective-C)', require('./test/ios/saml'), false, 'saml-ios-app'),
 
   // Cordova Android
+  new AndroidClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
+  new AndroidClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
+  new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true),
 
   // Cordova iOS
   // new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
