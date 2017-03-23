@@ -52,6 +52,10 @@ For SAML testing:
 * `npm run setup -- common`
 * `npm start`
 
+### Running specific tests
+
+To specify which client apps to test, use `npm run setup -- test` before `npm start`.
+
 ## Troubleshooting
 
 ### Error during "before" phase
