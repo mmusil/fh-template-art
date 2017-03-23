@@ -21,7 +21,7 @@ describe('Tests for client apps', function() {
 
         before(function() {
           clientApp.buildType = buildType;
-          // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490196092080.app');
+          // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490261833534.app');
 
           const project = new Project(clientApp);
 

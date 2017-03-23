@@ -9,6 +9,7 @@ const rimraf = require('../utils/rimraf');
 const fs = require('fs');
 const unzip = require('../utils/unzip');
 const plist = require('plist');
+const xml2js = require('../utils/xml2js');
 
 class IOSClientApp extends ClientApp {
 
@@ -62,13 +63,20 @@ class IOSClientApp extends ClientApp {
   }
 
   allowArbitraryLoadsCordova() {
-    return this.editFile(`${this.scheme}/${this.scheme}-Info.plist`, file => {
-      const plistData = plist.parse(fs.readFileSync(file, 'utf8'));
-      plistData.NSAppTransportSecurity = {
-        NSAllowsArbitraryLoads: true
-      };
-      fs.writeFileSync(file, plist.build(plistData));
-    });
+    return this.editFile(`config.xml`, file =>
+      xml2js.parse(fs.readFileSync(file, 'utf8'))
+        .then(config => {
+          config.widget.access.push({
+            $: {
+              origin: '*',
+              'allows-arbitrary-loads-in-media': 'true',
+              'allows-arbitrary-loads-in-web-content': 'true',
+              'allows-local-networking': 'true'
+            }
+          });
+          fs.writeFileSync(file, xml2js.build(config));
+        })
+    );
   }
 
   createCredBundle() {

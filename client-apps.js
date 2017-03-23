@@ -1,7 +1,7 @@
 "use strict";
 
-const AndroidClientApp = require('./model/client-app-android');
-// const IOSClientApp = require('./model/client-app-ios');
+// const AndroidClientApp = require('./model/client-app-android');
+const IOSClientApp = require('./model/client-app-ios');
 
 const clientApps = [
   // Android native
@@ -19,14 +19,14 @@ const clientApps = [
   // new IOSClientApp('saml_project', 'SAML iOS (Objective-C)', require('./test/ios/saml'), false, 'saml-ios-app'),
 
   // Cordova Android
-  new AndroidClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
-  new AndroidClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
-  new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true),
+  // new AndroidClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
+  // new AndroidClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
+  // new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true),
 
   // Cordova iOS
   // new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
   // new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
-  // new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
+  new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
 ];
 
 module.exports = clientApps;
