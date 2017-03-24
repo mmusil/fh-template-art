@@ -312,7 +312,8 @@ function pullApp(clientApp) {
     .end();
 }
 
-function checkDataBrowser(clientApp, value) {
+function checkDataBrowser(clientApp, value, removeAll) {
+  const elem = value ? `td=${value}` : '.emptyContainer';
   return init()
     .url(`${config.host}/#/projects/${clientApp.project.guid}/apps/${clientApp.cloudApp.guid}/databrowser`)
     .then(() => login(config.username, config.password))
@@ -320,14 +321,20 @@ function checkDataBrowser(clientApp, value) {
     .waitForVisible('#databrowser_container h3')
     .click('#databrowser_container h3')
     .pause(4000)
-    .waitForVisible(`td=${value}`)
-    .waitForVisible('.btn-danger')
-    .click('.btn-danger')
-    .waitForVisible('.btn-trash-all-rows')
-    .click('.btn-trash-all-rows')
-    .pause(2000)
-    .waitForVisible('#modal-ok')
-    .click('#modal-ok')
+    .waitForVisible(elem)
+    .then(() => {
+      if (removeAll) {
+        return client
+          .waitForVisible('.btn-danger')
+          .click('.btn-danger')
+          .waitForVisible('.btn-trash-all-rows')
+          .click('.btn-trash-all-rows')
+          .pause(2000)
+          .waitForVisible('#modal-ok')
+          .click('#modal-ok')
+          .pause(2000);
+      }
+    })
     .end();
 }
 

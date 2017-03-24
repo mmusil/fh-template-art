@@ -49,12 +49,12 @@ For SAML testing:
 * start appium in separate console
 * `npm install`
 * add correct values to `config/appium.js`
-* `npm run setup -- common`
+* `npm run setup common`
 * `npm start`
 
 ### Running specific tests
 
-To specify which client apps to test, use `npm run setup -- test` before `npm start`.
+To specify which client apps to test, use `npm run setup test` before `npm start`.
 
 ## Troubleshooting
 

@@ -1,11 +1,11 @@
 "use strict";
 
 const program = require('commander');
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 const fs = require('fs');
 const path = require('path');
 
-const file = path.resolve(__dirname, 'config/common.json');
+const file = path.resolve(__dirname, '../config/common.json');
 
 program
   .version(pkg.version)
@@ -23,7 +23,7 @@ if (
   !program.password ||
   !program.environment
 ) {
-  program.outputHelp();
+  return program.outputHelp();
 }
 
 const settings = {

@@ -14,6 +14,7 @@ const git = require('../utils/git');
 const rimraf = require('../utils/rimraf');
 const path = require('path');
 const credConfig = require('../config/credentials.json');
+const actions = require('../utils/actions');
 
 class ClientApp {
 
@@ -46,6 +47,8 @@ class ClientApp {
 
   initAppium() {
     console.log('Initializing appium');
+
+    wd.addPromiseChainMethod('swipe', actions.swipe);
 
     this.driver = wd.promiseChainRemote(appiumConfig.server);
 

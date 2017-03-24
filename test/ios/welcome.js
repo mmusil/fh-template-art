@@ -38,7 +38,7 @@ function test() {
       .alertText().should.eventually.include('Success')
       .dismissAlert().sleep(1000)
       .then(() =>
-        studio.checkDataBrowser(self, value)
+        studio.checkDataBrowser(self, value, true)
       );
   });
 

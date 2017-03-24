@@ -1,17 +1,18 @@
 "use strict";
 
 const program = require('commander');
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 const fs = require('fs');
 const path = require('path');
 
-const file = path.resolve(__dirname, 'config/test.json');
+const file = path.resolve(__dirname, '../config/test.json');
 
 const template = {
   welcome: 'welcome_project',
   helloworld: 'hello_world_project',
   push: 'pushstarter_project',
-  saml: 'saml_project'
+  saml: 'saml_project',
+  sync: 'sync_project'
 };
 
 const iostype = {
@@ -23,7 +24,7 @@ program
   .version(pkg.version)
   .option('-l, --platform <platform>', 'platform (android|ios|all)', /^(android|ios|all)$/i, 'all')
   .option('-t, --type <type>', 'type (native|cordova|all)', /^(native|cordova|all)$/i, 'all')
-  .option('-m, --template <template>', 'template (welcome|helloworld|push|saml|all)', /^(welcome|helloworld|push|saml|all)$/i, 'all')
+  .option('-m, --template <template>', 'template (welcome|helloworld|push|saml|sync|all)', /^(welcome|helloworld|push|saml|sync|all)$/i, 'all')
   .option('-i, --iostype <iostype>', 'iOS type (objc|swift|all)', /^(objc|swift|all)$/i, 'all')
   .parse(process.argv);
 
@@ -38,7 +39,7 @@ if (program.platform === 'all') {
 if (program.type === 'all') {
   settings.types = ['native', 'cordova'];
 } else {
-  settings.types = program.type;
+  settings.types = [program.type];
 }
 
 if (program.template !== 'all') {

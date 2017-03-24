@@ -24,7 +24,9 @@ const clientApps = {
       new IOSClientApp('pushstarter_project', 'Simple iOS (Swift) Push App', require('./test/ios/push'), false, 'PushStarter', 'org.aerogear.helloworldpush'),
       new IOSClientApp('pushstarter_project', 'Simple iOS (Objective-C) Push App', require('./test/ios/push'), false, 'PushStarter', 'org.aerogear.helloworldpush'),
       new IOSClientApp('saml_project', 'SAML iOS (Swift)', require('./test/ios/saml')),
-      new IOSClientApp('saml_project', 'SAML iOS (Objective-C)', require('./test/ios/saml'), false, 'saml-ios-app')
+      new IOSClientApp('saml_project', 'SAML iOS (Objective-C)', require('./test/ios/saml'), false, 'saml-ios-app'),
+      new IOSClientApp('sync_project', 'Sync iOS (Swift) App', require('./test/ios/sync')),
+      new IOSClientApp('sync_project', 'Sync iOS (Objective-C) App', require('./test/ios/sync'))
     ],
     cordova: [
       new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
