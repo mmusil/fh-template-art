@@ -1,8 +1,11 @@
 "use strict";
 
+const db = require('../../utils/databrowser');
+
 function test() {
 
   const self = this;
+  const testString = Date.now()+'appium';
 
   step('should wait for the app to initialize', function() {
     return self.driver
@@ -26,9 +29,13 @@ function test() {
       .elementByAndroidUIAutomator('new UiSelector().text("Data browser")')
         .click().sleep(1000)
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/data")')
-        .sendKeys('1234 appium').sleep(1000)
+        .sendKeys(testString).sleep(1000)
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/save")')
-        .click().sleep(5000); //TO DO: check data browser in studio
+        .click().sleep(5000)
+      .then(() =>
+        db.getItemFromDb(self,'Users',testString)
+      ).should.become(testString);
+      
   });
 }
 

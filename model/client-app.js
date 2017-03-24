@@ -36,6 +36,8 @@ class ClientApp {
     this.findSuitableCredBundle = this.findSuitableCredBundle.bind(this);
     this.sendPushNotification = this.sendPushNotification.bind(this);
     this.prepareConnection = this.prepareConnection.bind(this);
+    this.getUserDetails = this.getUserDetails.bind(this);
+    this.getCloudHostURL = this.getCloudHostURL.bind(this);
   }
 
   webviewContext() {
@@ -108,6 +110,11 @@ class ClientApp {
       .then(env => {
         this.environment = env.label;
       })
+      .then(this.getUserDetails)
+      .then(() => {
+        if (this.projectTemplateId === 'welcome_project' || this.projectTemplateId === 'sync_project')
+          return this.getCloudHostURL();
+      })
       .then(() => {
         if (this.projectTemplateId === 'pushstarter_project') {
           return this.preparePush();
@@ -156,6 +163,31 @@ class ClientApp {
       .then(connection => {
         this.connection = connection;
       });
+  }
+
+  getUserDetails() {
+    console.log('Preparing userkey');
+
+    return fhc.getUserKey(config.username)
+    .then(res=>{
+      this.username = config.username;
+      this.userKey = res;
+    },
+    err=>{
+      if (err) throw new Error('Can not get or create user key');
+    })
+  }
+
+  getCloudHostURL() {
+    console.log('Reading deployed cloud app URL');
+
+    fhc.getCloudUrl(this.cloudApp.guid, this.environment)
+    .then(res=>{
+      this.cloudHost = res;
+    },
+    err=>{
+       throw new Error('Can not get cloud url')
+    })
   }
 
 }
