@@ -21,6 +21,7 @@
     "mocha-steps": "^1.0.2",
     "plist": "^2.0.1",
     "promisify-node": "^0.4.0",
+    "request": "^2.81.0",
     "rimraf": "^2.6.1",
     "selenium-standalone": "^6.0.1",
     "simple-git": "^1.66.0",
