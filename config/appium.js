@@ -20,7 +20,8 @@ const config = {
     browserName: '',
     'appium-version': '1.6',
     platformName: 'Android',
-    platformVersion: '7.0',
+    platformVersion: '6.0',
+    fullReset: true,
     deviceName: 'Android Emulator',
   }
 };
