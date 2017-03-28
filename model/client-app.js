@@ -15,6 +15,7 @@ const rimraf = require('../utils/rimraf');
 const path = require('path');
 const credConfig = require('../config/credentials.json');
 const actions = require('../utils/actions');
+const fs = require('fs');
 
 class ClientApp {
 
@@ -30,6 +31,7 @@ class ClientApp {
     this.webviewContext = this.webviewContext.bind(this);
     this.initAppium = this.initAppium.bind(this);
     this.finishAppium = this.finishAppium.bind(this);
+    this.takeScreenshot = this.takeScreenshot.bind(this);
     this.prepareCredBundle = this.prepareCredBundle.bind(this);
     this.prepare = this.prepare.bind(this);
     this.editFile = this.editFile.bind(this);
@@ -68,6 +70,24 @@ class ClientApp {
     if (this.driver) {
       return this.driver.quit();
     }
+  }
+
+  takeScreenshot(error) {
+    const logFolder = path.resolve(__dirname, '../../logs');
+    const timeStamp = new Date().getTime().toString();
+    const pngFile = path.resolve(logFolder, timeStamp + '.png');
+
+    return this.driver
+      .takeScreenshot()
+      .then(() => {
+        if (!fs.existsSync(logFolder)) {
+          fs.mkdirSync(logFolder);
+        }
+      })
+      .saveScreenshot(pngFile)
+      .then(() => {
+        throw error;
+      });
   }
 
   prepareCredBundle() {

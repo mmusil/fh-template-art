@@ -19,7 +19,8 @@ function test() {
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/call_cloud")')
         .click().sleep(5000)
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/response")')
-        .text().should.become('Response: Hello from FeedHenry');
+        .text().should.become('Response: Hello from FeedHenry')
+      .catch(self.takeScreenshot);
   });
 
   it('should save value to Data Browser', function() {
@@ -34,8 +35,8 @@ function test() {
         .click().sleep(5000)
       .then(() =>
         db.getItemFromDb(self,'Users',testString)
-      ).should.become(testString);
-
+      ).should.become(testString)
+      .catch(self.takeScreenshot);
   });
 }
 

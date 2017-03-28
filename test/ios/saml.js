@@ -20,7 +20,8 @@ function test() {
       .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[6]/XCUIElementTypeButton[1]")
         .click()
       .sleep(5000)
-      .elementByName("Great! You're signed in.").text().should.become("Great! You're signed in.");
+      .elementByName("Great! You're signed in.").text().should.become("Great! You're signed in.")
+      .catch(self.takeScreenshot);
   });
 
 }

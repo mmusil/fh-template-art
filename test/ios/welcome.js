@@ -20,7 +20,8 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[2]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeButton[1]')
         .click().sleep(5000)
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[2]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTextView[2]')
-        .text().should.become('Hello from FeedHenry');
+        .text().should.become('Hello from FeedHenry')
+      .catch(self.takeScreenshot);
   });
 
   it('should save value to Data Browser', function() {
@@ -39,7 +40,8 @@ function test() {
       .dismissAlert().sleep(1000)
       .then(() =>
         db.getItemFromDb(self, 'Users', value)
-      ).should.become(value);
+      ).should.become(value)
+      .catch(self.takeScreenshot);
   });
 
   it('should get location', function() {
@@ -49,7 +51,8 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[4]/XCUIElementTypeStaticText[1]')
         .click().sleep(1000)
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[2]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeButton[1]')
-        .click().sleep(1000);
+        .click().sleep(1000)
+      .catch(self.takeScreenshot);
   });
 
   it('should open the rest of pages', function() {
@@ -69,7 +72,8 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[2]/XCUIElementTypeOther[1]/XCUIElementTypeNavigationBar[1]/XCUIElementTypeButton[1]')
         .click().sleep(1000)
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[8]/XCUIElementTypeStaticText[1]')
-        .click().sleep(1000);
+        .click().sleep(1000)
+      .catch(self.takeScreenshot);
   });
 
 }

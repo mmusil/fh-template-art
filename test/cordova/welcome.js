@@ -19,7 +19,8 @@ function test() {
       .sleep(3000)
       .elementByCss('.response_content').text().should.become('Response: Hello from FeedHenry')
       .elementByCss('.btn.back').click()
-      .sleep(2000);
+      .sleep(2000)
+      .catch(self.takeScreenshot);
   });
 
   it('should save value to Data Browser', function() {
@@ -36,7 +37,8 @@ function test() {
       .sleep(2000)
       .then(() =>
         studio.checkDataBrowser(self, value)
-      );
+      )
+      .catch(self.takeScreenshot);
   });
 
   it('should get location', function() {
@@ -56,7 +58,8 @@ function test() {
       .elementByCss('.get-weather-btn').click()
       .sleep(2000)
       .elementByCss('.btn.back').click()
-      .sleep(2000);
+      .sleep(2000)
+      .catch(self.takeScreenshot);
   });
 
   it('should open the rest of pages', function() {
@@ -72,7 +75,8 @@ function test() {
       .elementByCss('.stats-analytics').click()
       .sleep(2000)
       .elementByCss('.btn.back').click()
-      .sleep(2000);
+      .sleep(2000)
+      .catch(self.takeScreenshot);
   });
 
 }

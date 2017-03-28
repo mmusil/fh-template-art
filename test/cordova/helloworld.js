@@ -14,7 +14,8 @@ function test() {
       .elementByCss('#hello_to').sendKeys('test')
       .elementByCss('#say_hello').click()
       .sleep(3000)
-      .elementByCss('#cloudResponse').text().should.become('Hello test');
+      .elementByCss('#cloudResponse').text().should.become('Hello test')
+      .catch(self.takeScreenshot);
   });
 
 }

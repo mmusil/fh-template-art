@@ -23,7 +23,8 @@ function test() {
         .click().sleep(2000)
       .then(() =>
         db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(undefined);
+      ).should.become(undefined)
+      .catch(self.takeScreenshot);
   });
 
   it('should add a value', function() {
@@ -40,7 +41,8 @@ function test() {
         .text().should.eventually.include(value)
       .then(() =>
         db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(value);
+      ).should.become(value)
+      .catch(self.takeScreenshot);
   });
 
   it('should edit a value', function() {
@@ -59,7 +61,8 @@ function test() {
         .text().should.eventually.include(value)
       .then(() =>
         db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(value);
+      ).should.become(value)
+      .catch(self.takeScreenshot);
   });
 
   //TODO: should delete a value

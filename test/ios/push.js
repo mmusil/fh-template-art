@@ -11,17 +11,20 @@ function test() {
 
   step('should enable push', function() {
     return self.driver
-      .acceptAlert();
+      .acceptAlert()
+      .catch(self.takeScreenshot);
   });
 
   step('should send notification', function() {
-    return self.sendPushNotification();
+    return self.sendPushNotification()
+      .catch(self.takeScreenshot);
   });
 
   it('should receive notification', function() {
     return self.driver
       .sleep(10000)
-      .elementByName('test').text().should.become('test');
+      .elementByName('test').text().should.become('test')
+      .catch(self.takeScreenshot);
   });
 
 }

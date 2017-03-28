@@ -22,7 +22,8 @@ function test() {
       .sleep(10000)
       .alertText().should.eventually.include('Great, you\'re signed in!')
       .dismissAlert()
-      .then(self.webviewContext);
+      .then(self.webviewContext)
+      .catch(self.takeScreenshot);
   });
 
 }
