@@ -77,7 +77,11 @@ function getItemFromDb(appObj, collectionName, dbEntry) {
                   }
                   body = JSON.parse(body);
                   var item = body.list.find(dbItem => dbItem.fields[Object.keys(dbItem.fields)[0]] === dbEntry);
-                  return resolve(item.fields[Object.keys(item.fields)[0]]);
+                  if (item) {
+                    return resolve(item.fields[Object.keys(item.fields)[0]]);
+                  } else {
+                    return resolve(undefined);
+                  }
                 }
         );
   });

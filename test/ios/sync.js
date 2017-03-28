@@ -1,6 +1,6 @@
 "use strict";
 
-const studio = require('../../utils/studio');
+const db = require('../../utils/databrowser');
 
 function test() {
 
@@ -12,7 +12,7 @@ function test() {
   });
 
   it('should cancel adding a value', function() {
-    const value = 'value-cancel';
+    const value = 'value-cancel-' + new Date().getTime().toString();
 
     return self.driver
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeNavigationBar[1]/XCUIElementTypeButton[1]')
@@ -22,12 +22,12 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeNavigationBar[1]/XCUIElementTypeButton[1]')
         .click().sleep(2000)
       .then(() =>
-        studio.checkDataBrowser(self, null)
-      );
+        db.getItemFromDb(self, 'myShoppingList', value)
+      ).should.become(undefined);
   });
 
   it('should add a value', function() {
-    const value = 'value1';
+    const value = 'value1-' + new Date().getTime().toString();
 
     return self.driver
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeNavigationBar[1]/XCUIElementTypeButton[1]')
@@ -39,12 +39,12 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[1]/XCUIElementTypeStaticText[1]')
         .text().should.become(value)
       .then(() =>
-        studio.checkDataBrowser(self, value)
-      );
+        db.getItemFromDb(self, 'myShoppingList', value)
+      ).should.become(value);
   });
 
   it('should edit a value', function() {
-    const value = 'value2';
+    const value = 'value2-' + new Date().getTime().toString();
 
     return self.driver
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[1]/XCUIElementTypeStaticText[1]')
@@ -58,8 +58,8 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[1]/XCUIElementTypeStaticText[1]')
         .text().should.become(value)
       .then(() =>
-        studio.checkDataBrowser(self, value, true)
-      );
+        db.getItemFromDb(self, 'myShoppingList', value)
+      ).should.become(value);
   });
 
   //TODO: should delete a value

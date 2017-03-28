@@ -14,7 +14,7 @@ const config = {
     xcodeOrgId: '75B468G5L7',
     xcodeSigningId: 'iPhone Developer',
     fullReset: true,
-    udid: '11797003d0ab2b74430af7f38fbf1b0f5b2a723d'
+    udid: '11311d2eda271918c3b43511d2cdb86a38206c37'
   },
   android: {
     browserName: '',
