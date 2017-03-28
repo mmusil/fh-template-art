@@ -12,7 +12,8 @@ const clientApps = {
     cordova: [
       new AndroidClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
       new AndroidClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
-      new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
+      new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true),
+      new AndroidClientApp('sync_project', 'Sync App', require('./test/cordova/sync'), true)
     ]
   },
   ios: {
@@ -31,7 +32,8 @@ const clientApps = {
     cordova: [
       new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
       new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
-      new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true)
+      new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true),
+      new IOSClientApp('sync_project', 'Sync App', require('./test/cordova/sync'), true)
     ]
   }
 };
