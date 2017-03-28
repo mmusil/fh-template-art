@@ -299,15 +299,17 @@ function ping(appId, env) {
   });
 }
 
-function getUserKey(username){
-  return new Promise(function(resolve,reject){
-    var param={"_":['read',username]}; 
-    fh.keys.user(param,function(err,key){
+function getUserKey(username) {
+  return new Promise(function(resolve,reject) {
+    var param={"_":['read',username]};
+    fh.keys.user(param,function(err,key) {
       if (err) {
         console.log('Key is not found. Creating new key');
         param = {"_":['add',username]};
-        fh.keys.user(param,function(err,key){
-          if(err) return reject(err);
+        fh.keys.user(param,function(err,key) {
+          if (err) {
+            return reject(err);
+          }
 
           return resolve(key.apiKey);
         });
@@ -319,27 +321,31 @@ function getUserKey(username){
   });
 }
 
-function getAppKey(projectId, cloudAppId){        
-  return new Promise(function(resolve, reject){
+function getAppKey(projectId, cloudAppId) {
+  return new Promise(function(resolve, reject) {
     fh.app.read({
       project: projectId,
       app: cloudAppId
     },
-    function(err,appInfo){
-      if (err) return reject(err)
-      return resolve(appInfo.apiKey)
+    function(err,appInfo) {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(appInfo.apiKey);
     });
   });
 }
 
-function getCloudUrl(cloudAppId,environment) {           
-  return new Promise(function(resolve, reject){
+function getCloudUrl(cloudAppId,environment) {
+  return new Promise(function(resolve, reject) {
     fh.app.hosts({
       env: environment,
       app: cloudAppId
     },
-    function(err,hosts){
-      if (err) return reject(err);
+    function(err,hosts) {
+      if (err) {
+        return reject(err);
+      }
       return resolve(hosts.url);
     });
   });

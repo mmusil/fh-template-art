@@ -7,7 +7,8 @@
     "prestart": "selenium-standalone install --config=config/selenium.js &>/dev/null && selenium-standalone start --config=config/selenium.js &>/dev/null &",
     "poststart": "lsof -i tcp:4444 | grep LISTEN | awk '{print $2}' | xargs kill",
     "setup": "node utils/setup.js",
-    "cleanup": "node utils/cleanup.js"
+    "cleanup": "node utils/cleanup.js",
+    "eslint": "eslint **/*.js"
   },
   "author": "Jan Hellar <jhellar@redhat.com>",
   "license": "ISC",

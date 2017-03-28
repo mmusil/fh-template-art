@@ -6,3 +6,4 @@ tempSAML
 fixtures/fastlane.p12
 fixtures/ios
 builds/*
+report.xml
