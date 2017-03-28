@@ -73,7 +73,7 @@ class ClientApp {
   }
 
   takeScreenshot(error) {
-    const logFolder = path.resolve(__dirname, '../../logs');
+    const logFolder = path.resolve(__dirname, '../logs');
     const timeStamp = new Date().getTime().toString();
     const pngFile = path.resolve(logFolder, timeStamp + '.png');
 
