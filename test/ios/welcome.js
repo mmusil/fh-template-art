@@ -1,6 +1,6 @@
 "use strict";
 
-const studio = require('../../utils/studio');
+const db = require('../../utils/databrowser');
 
 function test() {
 
@@ -38,8 +38,8 @@ function test() {
       .alertText().should.eventually.include('Success')
       .dismissAlert().sleep(1000)
       .then(() =>
-        studio.checkDataBrowser(self, value, true)
-      );
+        db.getItemFromDb(self, 'Users', value)
+      ).should.become(value);
   });
 
   it('should get location', function() {

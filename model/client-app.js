@@ -112,8 +112,9 @@ class ClientApp {
       })
       .then(this.getUserDetails)
       .then(() => {
-        if (this.projectTemplateId === 'welcome_project' || this.projectTemplateId === 'sync_project')
+        if (this.projectTemplateId === 'welcome_project' || this.projectTemplateId === 'sync_project') {
           return this.getCloudHostURL();
+        }
       })
       .then(() => {
         if (this.projectTemplateId === 'pushstarter_project') {
@@ -174,8 +175,10 @@ class ClientApp {
       this.userKey = res;
     },
     err=>{
-      if (err) throw new Error('Can not get or create user key');
-    })
+      if (err) {
+        throw new Error('Can not get or create user key');
+      }
+    });
   }
 
   getCloudHostURL() {
@@ -185,9 +188,9 @@ class ClientApp {
     .then(res=>{
       this.cloudHost = res;
     },
-    err=>{
-       throw new Error('Can not get cloud url')
-    })
+    ()=>{
+      throw new Error('Can not get cloud url');
+    });
   }
 
 }

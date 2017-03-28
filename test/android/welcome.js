@@ -11,7 +11,7 @@ function test() {
     return self.driver
       .sleep(5000);
   });
-  
+
   it('should call cloud', function() {
     return self.driver
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/call_cloud")')
@@ -35,7 +35,7 @@ function test() {
       .then(() =>
         db.getItemFromDb(self,'Users',testString)
       ).should.become(testString);
-      
+
   });
 }
 
