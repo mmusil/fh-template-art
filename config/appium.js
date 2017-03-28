@@ -20,8 +20,8 @@ const config = {
     browserName: '',
     'appium-version': '1.6',
     platformName: 'Android',
-    platformVersion: '4.4.2',
-    deviceName: 'Android Emulator'
+    platformVersion: '7.0',
+    deviceName: 'Android Emulator',
   }
 };
 
