@@ -34,7 +34,7 @@ describe('Tests for client apps', function() {
         describe(`Test for ${platform} ${type} "${clientApp.name}"`, function() {
 
           before(function() {
-            // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490340720172.app');
+            // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490697127160.app');
 
             const project = new Project(clientApp);
 

@@ -24,7 +24,7 @@ function test() {
   });
 
   it('should save value to Data Browser', function() {
-    const value = new Date().getTime();
+    const value = new Date().getTime().toString();
 
     return self.driver
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[2]/XCUIElementTypeOther[1]/XCUIElementTypeNavigationBar[1]/XCUIElementTypeButton[1]')
