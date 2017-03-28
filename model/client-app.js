@@ -86,6 +86,7 @@ class ClientApp {
       })
       .saveScreenshot(pngFile)
       .then(() => {
+        error.message += '\nscreenshot: ' + timeStamp;
         throw error;
       });
   }
