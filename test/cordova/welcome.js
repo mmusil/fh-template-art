@@ -1,6 +1,6 @@
 "use strict";
 
-const studio = require('../../utils/studio');
+const db = require('../../utils/databrowser');
 
 function test() {
 
@@ -36,8 +36,8 @@ function test() {
       .elementByCss('.btn.back').click()
       .sleep(2000)
       .then(() =>
-        studio.checkDataBrowser(self, value)
-      )
+        db.getItemFromDb(self, 'Users', value)
+      ).should.become(value)
       .catch(self.takeScreenshot);
   });
 
