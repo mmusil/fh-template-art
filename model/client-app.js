@@ -16,6 +16,7 @@ const path = require('path');
 const credConfig = require('../config/credentials.json');
 const actions = require('../utils/actions');
 const fs = require('fs');
+const async = require('../utils/async');
 
 class ClientApp {
 
@@ -58,12 +59,14 @@ class ClientApp {
 
     appiumConfig[this.platform].app = this.buildFile;
 
-    return this.driver.init(appiumConfig[this.platform])
-      .then(() => {
-        if (this.cordova) {
-          return this.webviewContext();
-        }
-      });
+    return async.retry(
+      () => this.driver.init(appiumConfig[this.platform]),
+      config.retries
+    ).then(() => {
+      if (this.cordova) {
+        return this.webviewContext();
+      }
+    });
   }
 
   finishAppium() {
