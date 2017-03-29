@@ -34,7 +34,7 @@ function test() {
       .sleep(3000)
       .elementByCss('.extra_response').text().should.become('Your data is now saved. Please go to studio and see your data using the Data Browser.')
       .elementByCss('.btn.back').click()
-      .sleep(2000)
+      .sleep(5000)
       .then(() =>
         db.getItemFromDb(self, 'Users', value)
       ).should.become(value)
