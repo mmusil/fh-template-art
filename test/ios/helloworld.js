@@ -12,7 +12,7 @@ function test() {
   it('should get response from cloud', function() {
     return self.driver
       .elementByName("Call").click()
-      .sleep(2000)
+      .sleep(5000)
       .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeTextView[1]")
         .text().should.become('Hello World')
       .catch(self.takeScreenshot);
