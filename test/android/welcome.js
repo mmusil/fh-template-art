@@ -34,8 +34,8 @@ function test() {
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/save")')
         .click().sleep(5000)
       .then(() =>
-        db.getItemFromDb(self,'Users',testString)
-      ).should.become(testString)
+        db.isItemInDb(self,'Users',testString)
+      ).should.become(true)
       .catch(self.takeScreenshot);
   });
 }

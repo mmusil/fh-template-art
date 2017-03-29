@@ -58,7 +58,7 @@ function getItemsList(appObj, collectionName) {
 
 }
 
-function getItemFromDb(appObj, collectionName, dbEntry) {
+function isItemInDb(appObj, collectionName, dbEntry) {
 
   var dataString = `{"act":"list","type":"${collectionName}","__fh":{"appkey":"${appObj.cloudApp.apiKey}","userkey":"${appObj.userKey}"}}`;
 
@@ -78,9 +78,9 @@ function getItemFromDb(appObj, collectionName, dbEntry) {
                   body = JSON.parse(body);
                   var item = body.list.find(dbItem => dbItem.fields[Object.keys(dbItem.fields)[0]] === dbEntry);
                   if (item) {
-                    return resolve(item.fields[Object.keys(item.fields)[0]]);
+                    resolve(true);
                   } else {
-                    return resolve(undefined);
+                    resolve(false);
                   }
                 }
         );
@@ -91,5 +91,5 @@ function getItemFromDb(appObj, collectionName, dbEntry) {
 module.exports = {
   getCollectionsList: getCollectionsList,
   getItemsList: getItemsList,
-  getItemFromDb: getItemFromDb
+  isItemInDb: isItemInDb
 };

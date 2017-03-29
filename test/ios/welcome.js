@@ -39,8 +39,8 @@ function test() {
       .alertText().should.eventually.include('Success')
       .dismissAlert().sleep(1000)
       .then(() =>
-        db.getItemFromDb(self, 'Users', value)
-      ).should.become(value)
+        db.isItemInDb(self, 'Users', value)
+      ).should.become(true)
       .catch(self.takeScreenshot);
   });
 

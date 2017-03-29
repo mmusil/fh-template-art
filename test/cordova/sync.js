@@ -22,8 +22,8 @@ function test() {
       .elementByCss('.ion-ios-list-outline')
         .click().sleep(2000)
       .then(() =>
-        db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(undefined)
+        db.isItemInDb(self, 'myShoppingList', value)
+      ).should.become(false)
       .catch(self.takeScreenshot);
   });
 
@@ -40,8 +40,8 @@ function test() {
       .elementByCss('ion-list:first-child .item-content')
         .text().should.eventually.include(value)
       .then(() =>
-        db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(value)
+        db.isItemInDb(self, 'myShoppingList', value)
+      ).should.become(true)
       .catch(self.takeScreenshot);
   });
 
@@ -60,8 +60,8 @@ function test() {
       .elementByCss('ion-list:first-child .item-content')
         .text().should.eventually.include(value)
       .then(() =>
-        db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(value)
+        db.isItemInDb(self, 'myShoppingList', value)
+      ).should.become(true)
       .catch(self.takeScreenshot);
   });
 

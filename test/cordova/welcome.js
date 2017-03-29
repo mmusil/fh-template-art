@@ -36,8 +36,8 @@ function test() {
       .elementByCss('.btn.back').click()
       .sleep(10000)
       .then(() =>
-        db.getItemFromDb(self, 'Users', value)
-      ).should.become(value)
+        db.isItemInDb(self, 'Users', value)
+      ).should.become(true)
       .catch(self.takeScreenshot);
   });
 

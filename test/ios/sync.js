@@ -22,8 +22,8 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeNavigationBar[1]/XCUIElementTypeButton[1]')
         .click().sleep(2000)
       .then(() =>
-        db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(undefined)
+        db.isItemInDb(self, 'myShoppingList', value)
+      ).should.become(false)
       .catch(self.takeScreenshot);
   });
 
@@ -40,8 +40,8 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[1]/XCUIElementTypeStaticText[1]')
         .text().should.become(value)
       .then(() =>
-        db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(value)
+        db.isItemInDb(self, 'myShoppingList', value)
+      ).should.become(true)
       .catch(self.takeScreenshot);
   });
 
@@ -60,8 +60,8 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[1]/XCUIElementTypeStaticText[1]')
         .text().should.become(value)
       .then(() =>
-        db.getItemFromDb(self, 'myShoppingList', value)
-      ).should.become(value)
+        db.isItemInDb(self, 'myShoppingList', value)
+      ).should.become(true)
       .catch(self.takeScreenshot);
   });
 
