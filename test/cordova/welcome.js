@@ -24,7 +24,7 @@ function test() {
   });
 
   it('should save value to Data Browser', function() {
-    const value = new Date().getTime();
+    const value = new Date().getTime().toString();
 
     return self.driver
       .elementByCss('.data-browser').click()
