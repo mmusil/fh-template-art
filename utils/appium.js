@@ -17,7 +17,7 @@ let driver;
 
 function init(clientApp) {
   if (running) {
-    return driver;
+    return Promise.resolve(driver);
   }
 
   console.log('Initializing appium');
