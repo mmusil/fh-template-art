@@ -14,13 +14,13 @@ function test() {
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/call_cloud")')
         .click().sleep(5000)
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/response")')
-        .text().should.become('Response: Hello from FeedHenry');
+        .text().should.become('Response: Hello from FeedHenry')
+      .elementByAndroidUIAutomator('new UiSelector().className("android.widget.ImageButton").instance(0)')
+        .click().sleep(1000);
   });
 
   it('should save value to Data Browser', function() {
     return self.driver
-      .elementByAndroidUIAutomator('new UiSelector().className("android.widget.ImageButton").instance(0)')
-        .click().sleep(1000)
       .elementByAndroidUIAutomator('new UiSelector().text("Data browser")')
         .click().sleep(1000)
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/data")')
