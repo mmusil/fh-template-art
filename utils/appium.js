@@ -32,6 +32,7 @@ function init(clientApp) {
     config.retries
   ).then(() => {
     running = true;
+    console.log(JSON.stringify(clientApp.driver, null, 2));
 
     if (clientApp.cordova) {
       return this.webviewContext();
