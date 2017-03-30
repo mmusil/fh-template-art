@@ -69,7 +69,8 @@ function takeScreenshot(driver) {
         fs.mkdirSync(logFolder);
       }
     })
-    .saveScreenshot(pngFile);
+    .saveScreenshot(pngFile)
+    .catch(console.error);
 }
 
 function webviewContext(driver) {

@@ -35,7 +35,6 @@ describe('Tests for client apps', function() {
         describe(`Test for ${platform} ${type} "${clientApp.name}"`, function() {
 
           this.retries(config.retries);
-          console.log(config.retries);
 
           before(function() {
             const project = new Project(clientApp);
@@ -54,9 +53,8 @@ describe('Tests for client apps', function() {
           });
 
           afterEach(function() {
-            if (this.currentTest.state === 'failed') {
+            if (this.currentTest.state !== 'passed') {
               return appium.takeScreenshot(clientApp.driver)
-                .catch(console.error)
                 .then(() => appium.finish(clientApp.driver));
             }
           });
