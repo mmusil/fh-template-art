@@ -36,6 +36,8 @@ describe('Tests for client apps', function() {
       apps.forEach(clientApp => {
         describe(`Test for ${platform} ${type} "${clientApp.name}"`, function() {
 
+          this.retries(config.retries);
+
           before(function() {
             const project = new Project(clientApp);
 
