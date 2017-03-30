@@ -35,6 +35,7 @@ describe('Tests for client apps', function() {
         describe(`Test for ${platform} ${type} "${clientApp.name}"`, function() {
 
           this.retries(config.retries);
+          console.log(config.retries);
 
           before(function() {
             const project = new Project(clientApp);
