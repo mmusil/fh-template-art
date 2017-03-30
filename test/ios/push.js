@@ -1,30 +1,22 @@
 "use strict";
 
-function test() {
+function test(driver) {
 
   const self = this;
 
-  step('should wait for the app to initialize', function() {
-    return self.driver
-      .sleep(5000);
-  });
-
   step('should enable push', function() {
-    return self.driver
-      .acceptAlert()
-      .catch(self.takeScreenshot);
+    return driver
+      .acceptAlert();
   });
 
   step('should send notification', function() {
-    return self.sendPushNotification()
-      .catch(self.takeScreenshot);
+    return self.sendPushNotification();
   });
 
   it('should receive notification', function() {
-    return self.driver
+    return driver
       .sleep(10000)
-      .elementByName('test').text().should.become('test')
-      .catch(self.takeScreenshot);
+      .elementByName('test').text().should.become('test');
   });
 
 }

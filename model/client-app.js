@@ -2,21 +2,11 @@
 
 const fhc = require('../utils/fhc');
 const config = require('../config/common.json');
-const wd = require('wd');
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-chai.use(chaiAsPromised);
-chai.should();
-chaiAsPromised.transferPromiseness = wd.transferPromiseness;
-const appiumConfig = require('../config/appium');
 const studio = require('../utils/studio');
 const git = require('../utils/git');
 const rimraf = require('../utils/rimraf');
 const path = require('path');
 const credConfig = require('../config/credentials.json');
-const actions = require('../utils/actions');
-const fs = require('fs');
-const async = require('../utils/async');
 
 class ClientApp {
 
@@ -29,10 +19,6 @@ class ClientApp {
     this.cordova = cordova;
     this.buildType = 'debug';
 
-    this.webviewContext = this.webviewContext.bind(this);
-    this.initAppium = this.initAppium.bind(this);
-    this.finishAppium = this.finishAppium.bind(this);
-    this.takeScreenshot = this.takeScreenshot.bind(this);
     this.prepareCredBundle = this.prepareCredBundle.bind(this);
     this.prepare = this.prepare.bind(this);
     this.editFile = this.editFile.bind(this);
@@ -41,57 +27,6 @@ class ClientApp {
     this.prepareConnection = this.prepareConnection.bind(this);
     this.getUserDetails = this.getUserDetails.bind(this);
     this.getCloudHostURL = this.getCloudHostURL.bind(this);
-  }
-
-  webviewContext() {
-    return this.driver.contexts()
-      .then(contexts =>
-        this.driver.context(contexts[1])
-      );
-  }
-
-  initAppium() {
-    console.log('Initializing appium');
-
-    wd.addPromiseChainMethod('swipe', actions.swipe);
-
-    this.driver = wd.promiseChainRemote(appiumConfig.server);
-
-    appiumConfig[this.platform].app = this.buildFile;
-
-    return async.retry(
-      () => this.driver.init(appiumConfig[this.platform]),
-      config.retries
-    ).then(() => {
-      if (this.cordova) {
-        return this.webviewContext();
-      }
-    });
-  }
-
-  finishAppium() {
-    if (this.driver) {
-      return this.driver.quit();
-    }
-  }
-
-  takeScreenshot(error) {
-    const logFolder = path.resolve(__dirname, '../logs');
-    const timeStamp = new Date().getTime().toString();
-    const pngFile = path.resolve(logFolder, timeStamp + '.png');
-
-    return this.driver
-      .takeScreenshot()
-      .then(() => {
-        if (!fs.existsSync(logFolder)) {
-          fs.mkdirSync(logFolder);
-        }
-      })
-      .saveScreenshot(pngFile)
-      .then(() => {
-        error.message += '\nscreenshot: ' + timeStamp;
-        throw error;
-      });
   }
 
   prepareCredBundle() {

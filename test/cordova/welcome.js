@@ -1,32 +1,27 @@
 "use strict";
 
 const db = require('../../utils/databrowser');
+const appium = require('../../utils/appium');
 
-function test() {
+function test(driver) {
 
   const self = this;
 
-  step('should wait for the app to initialize', function() {
-    return self.driver
-      .sleep(5000);
-  });
-
   it('should get response from the cloud', function() {
-    return self.driver
+    return driver
       .elementByCss('.cloud-action').click()
       .sleep(2000)
       .elementByCss('.cloud-action-button').click()
       .sleep(3000)
       .elementByCss('.response_content').text().should.become('Response: Hello from FeedHenry')
       .elementByCss('.btn.back').click()
-      .sleep(2000)
-      .catch(self.takeScreenshot);
+      .sleep(2000);
   });
 
   it('should save value to Data Browser', function() {
     const value = new Date().getTime().toString();
 
-    return self.driver
+    return driver
       .elementByCss('.data-browser').click()
       .sleep(2000)
       .elementByCss('#nameField').sendKeys(value)
@@ -37,12 +32,11 @@ function test() {
       .sleep(10000)
       .then(() =>
         db.isItemInDb(self, 'Users', value)
-      ).should.become(true)
-      .catch(self.takeScreenshot);
+      ).should.become(true);
   });
 
   it('should get location', function() {
-    return self.driver
+    return driver
       .elementByCss('.weather-sample').click()
       .sleep(2000)
       .elementByCss('.get-geo-btn').click()
@@ -51,19 +45,18 @@ function test() {
       .hasElementByName('Get My Weather Info')
       .then(exists => {
         if (!exists) {
-          return self.driver.acceptAlert().sleep(2000);
+          return driver.acceptAlert().sleep(2000);
         }
       })
-      .then(self.webviewContext)
+      .then(() => appium.webviewContext(driver))
       .elementByCss('.get-weather-btn').click()
       .sleep(2000)
       .elementByCss('.btn.back').click()
-      .sleep(2000)
-      .catch(self.takeScreenshot);
+      .sleep(2000);
   });
 
   it('should open the rest of pages', function() {
-    return self.driver
+    return driver
       .elementByCss('.nodejs-page').click()
       .sleep(2000)
       .elementByCss('.btn.back').click()
@@ -75,8 +68,7 @@ function test() {
       .elementByCss('.stats-analytics').click()
       .sleep(2000)
       .elementByCss('.btn.back').click()
-      .sleep(2000)
-      .catch(self.takeScreenshot);
+      .sleep(2000);
   });
 
 }

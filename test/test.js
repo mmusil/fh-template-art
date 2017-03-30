@@ -5,10 +5,13 @@ const config = require('../config/common.json');
 const testConfig = require('../config/test.json');
 const fhc = require('../utils/fhc');
 const Project = require('../model/project');
+const appium = require('../utils/appium');
 
 describe('Tests for client apps', function() {
 
   this.timeout(15 * 60 * 1000);
+
+  let driver;
 
   before(function() {
     return fhc.init(config.host, config.username, config.password);
@@ -34,22 +37,33 @@ describe('Tests for client apps', function() {
         describe(`Test for ${platform} ${type} "${clientApp.name}"`, function() {
 
           before(function() {
-            // clientApp.buildFile = require('path').resolve(__dirname, '../builds/1490703465499.app');
-
             const project = new Project(clientApp);
 
-            // return Promise.resolve()
             return project.prepare()
               .then(clientApp.prepare)
-              .then(clientApp.build)
-              .then(clientApp.initAppium);
+              .then(clientApp.build);
           });
 
           after(function() {
-            return clientApp.finishAppium();
+            appium.finish(driver);
           });
 
-          clientApp.test();
+          beforeEach(function() {
+            return appium.init(clientApp)
+              .then(d => {
+                driver = d;
+              });
+          });
+
+          afterEach(function() {
+            if (this.currentTest.state === 'failed') {
+              return appium.takeScreenshot(driver)
+                .catch(console.error)
+                .then(() => appium.finish(driver));
+            }
+          });
+
+          clientApp.test(driver);
 
         });
       });

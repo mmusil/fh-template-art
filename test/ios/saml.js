@@ -1,16 +1,9 @@
 "use strict";
 
-function test() {
-
-  const self = this;
-
-  step('should wait for the app to initialize', function() {
-    return self.driver
-      .sleep(5000);
-  });
+function test(driver) {
 
   it('should sign in', function() {
-    return self.driver
+    return driver
       .elementByName("Sign In").click()
       .sleep(10000)
       .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[3]/XCUIElementTypeTextField[1]")
@@ -20,8 +13,7 @@ function test() {
       .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[6]/XCUIElementTypeButton[1]")
         .click()
       .sleep(5000)
-      .elementByName("Great! You're signed in.").text().should.become("Great! You're signed in.")
-      .catch(self.takeScreenshot);
+      .elementByName("Great! You're signed in.").text().should.become("Great! You're signed in.");
   });
 
 }

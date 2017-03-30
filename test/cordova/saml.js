@@ -1,16 +1,11 @@
 "use strict";
 
-function test() {
+const appium = require('../../utils/appium');
 
-  const self = this;
-
-  step('should wait for the app to initialize', function() {
-    return self.driver
-      .sleep(5000);
-  });
+function test(driver) {
 
   it('should sign in', function() {
-    return self.driver
+    return driver
       .elementByCss('.sign-in-button').click()
       .sleep(10000)
       .context('NATIVE_APP')
@@ -22,8 +17,7 @@ function test() {
       .sleep(10000)
       .alertText().should.eventually.include('Great, you\'re signed in!')
       .dismissAlert()
-      .then(self.webviewContext)
-      .catch(self.takeScreenshot);
+      .then(() => appium.webviewContext(driver));
   });
 
 }
