@@ -13,23 +13,22 @@ const path = require('path');
 const fs = require('fs');
 
 let running = false;
-let driver;
 
 function init(clientApp) {
   if (running) {
-    return Promise.resolve(driver);
+    return Promise.resolve();
   }
 
   console.log('Initializing appium');
 
   wd.addPromiseChainMethod('swipe', swipe);
 
-  driver = wd.promiseChainRemote(appiumConfig.server);
+  clientApp.driver = wd.promiseChainRemote(appiumConfig.server);
 
   appiumConfig[clientApp.platform].app = clientApp.buildFile;
 
   return async.retry(
-    () => driver.init(appiumConfig[clientApp.platform]),
+    () => clientApp.driver.init(appiumConfig[clientApp.platform]),
     config.retries
   ).then(() => {
     running = true;
@@ -42,7 +41,7 @@ function init(clientApp) {
   .then(() =>
     new Promise(resolve => {
       setTimeout(() => {
-        resolve(driver);
+        resolve();
       }, 10000);
     })
   );

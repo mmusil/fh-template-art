@@ -2,14 +2,14 @@
 
 const db = require('../../utils/databrowser');
 
-function test(driver) {
+function test() {
 
   const self = this;
 
   it('should cancel adding a value', function() {
     const value = 'value-cancel-' + new Date().getTime().toString();
 
-    return driver
+    return self.driver
       .elementByCss('.ion-plus')
         .click().sleep(2000)
       .elementByCss('.item-input input')
@@ -24,7 +24,7 @@ function test(driver) {
   it('should add a value', function() {
     const value = 'value1-' + new Date().getTime().toString();
 
-    return driver
+    return self.driver
       .elementByCss('.ion-plus')
         .click().sleep(2000)
       .elementByCss('.item-input input')
@@ -41,7 +41,7 @@ function test(driver) {
   it('should edit a value', function() {
     const value = 'value2-' + new Date().getTime().toString();
 
-    return driver
+    return self.driver
       .elementByCss('ion-list:first-child .item-content')
         .click().sleep(2000)
       .elementByCss('ion-view[title="Edit"] input')

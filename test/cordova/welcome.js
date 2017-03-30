@@ -3,12 +3,12 @@
 const db = require('../../utils/databrowser');
 const appium = require('../../utils/appium');
 
-function test(driver) {
+function test() {
 
   const self = this;
 
   it('should get response from the cloud', function() {
-    return driver
+    return self.driver
       .elementByCss('.cloud-action').click()
       .sleep(2000)
       .elementByCss('.cloud-action-button').click()
@@ -21,7 +21,7 @@ function test(driver) {
   it('should save value to Data Browser', function() {
     const value = new Date().getTime().toString();
 
-    return driver
+    return self.driver
       .elementByCss('.data-browser').click()
       .sleep(2000)
       .elementByCss('#nameField').sendKeys(value)
@@ -36,7 +36,7 @@ function test(driver) {
   });
 
   it('should get location', function() {
-    return driver
+    return self.driver
       .elementByCss('.weather-sample').click()
       .sleep(2000)
       .elementByCss('.get-geo-btn').click()
@@ -45,10 +45,10 @@ function test(driver) {
       .hasElementByName('Get My Weather Info')
       .then(exists => {
         if (!exists) {
-          return driver.acceptAlert().sleep(2000);
+          return self.driver.acceptAlert().sleep(2000);
         }
       })
-      .then(() => appium.webviewContext(driver))
+      .then(() => appium.webviewContext(self.driver))
       .elementByCss('.get-weather-btn').click()
       .sleep(2000)
       .elementByCss('.btn.back').click()
@@ -56,7 +56,7 @@ function test(driver) {
   });
 
   it('should open the rest of pages', function() {
-    return driver
+    return self.driver
       .elementByCss('.nodejs-page').click()
       .sleep(2000)
       .elementByCss('.btn.back').click()

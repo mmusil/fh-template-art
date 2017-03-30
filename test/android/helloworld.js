@@ -1,9 +1,11 @@
 "use strict";
 
-function test(driver) {
+function test() {
+
+  const self = this;
 
   it('should get response from cloud', function() {
-    return driver
+    return self.driver
       .elementByAndroidUIAutomator('new UiSelector().resourceId("com.feedhenry.helloworld:id/button")')
         .click().sleep(3000)
       .elementByAndroidUIAutomator('new UiSelector().resourceId("com.feedhenry.helloworld:id/cloud_response")')
@@ -11,7 +13,7 @@ function test(driver) {
   });
 
   it('should get custom response from cloud', function() {
-    return driver
+    return self.driver
       .elementByAndroidUIAutomator('new UiSelector().resourceId("com.feedhenry.helloworld:id/name")')
         .sendKeys("1234appium test")
       .elementByAndroidUIAutomator('new UiSelector().resourceId("com.feedhenry.helloworld:id/button")')

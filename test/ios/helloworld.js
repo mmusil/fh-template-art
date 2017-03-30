@@ -1,9 +1,11 @@
 "use strict";
 
-function test(driver) {
+function test() {
+
+  const self = this;
 
   it('should get response from cloud', function() {
-    return driver
+    return self.driver
       .elementByName("Call").click()
       .sleep(5000)
       .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeTextView[1]")
@@ -11,7 +13,7 @@ function test(driver) {
   });
 
   it('should get custom response from cloud', function() {
-    return driver
+    return self.driver
       .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTextField[1]")
         .clear()
       .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTextField[1]")

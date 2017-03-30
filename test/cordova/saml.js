@@ -2,10 +2,12 @@
 
 const appium = require('../../utils/appium');
 
-function test(driver) {
+function test() {
+
+  const self = this;
 
   it('should sign in', function() {
-    return driver
+    return self.driver
       .elementByCss('.sign-in-button').click()
       .sleep(10000)
       .context('NATIVE_APP')
@@ -17,7 +19,7 @@ function test(driver) {
       .sleep(10000)
       .alertText().should.eventually.include('Great, you\'re signed in!')
       .dismissAlert()
-      .then(() => appium.webviewContext(driver));
+      .then(() => appium.webviewContext(self.driver));
   });
 
 }

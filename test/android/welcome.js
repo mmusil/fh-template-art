@@ -2,13 +2,13 @@
 
 const db = require('../../utils/databrowser');
 
-function test(driver) {
+function test() {
 
   const self = this;
   const testString = Date.now()+'appium';
 
   it('should call cloud', function() {
-    return driver
+    return self.driver
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/call_cloud")')
         .click().sleep(1000)
       .elementByAndroidUIAutomator('new UiSelector().resourceId("org.feedhenry.welcome:id/call_cloud")')
@@ -18,7 +18,7 @@ function test(driver) {
   });
 
   it('should save value to Data Browser', function() {
-    return driver
+    return self.driver
       .elementByAndroidUIAutomator('new UiSelector().className("android.widget.ImageButton").instance(0)')
         .click().sleep(1000)
       .elementByAndroidUIAutomator('new UiSelector().text("Data browser")')

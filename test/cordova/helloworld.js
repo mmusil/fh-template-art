@@ -1,9 +1,11 @@
 "use strict";
 
-function test(driver) {
+function test() {
+
+  const self = this;
 
   it('should get response from the cloud', function() {
-    return driver
+    return self.driver
       .elementByCss('#hello_to').sendKeys('test')
       .elementByCss('#say_hello').click()
       .sleep(3000)

@@ -1,11 +1,11 @@
 "use strict";
 
-function test(driver) {
+function test() {
 
   const self = this;
 
   step('should enable push', function() {
-    return driver
+    return self.driver
       .acceptAlert();
   });
 
@@ -14,7 +14,7 @@ function test(driver) {
   });
 
   it('should receive notification', function() {
-    return driver
+    return self.driver
       .sleep(10000)
       .elementByName('test').text().should.become('test');
   });

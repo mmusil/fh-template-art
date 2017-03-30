@@ -11,8 +11,6 @@ describe('Tests for client apps', function() {
 
   this.timeout(15 * 60 * 1000);
 
-  let driver;
-
   before(function() {
     return fhc.init(config.host, config.username, config.password);
   });
@@ -47,25 +45,22 @@ describe('Tests for client apps', function() {
           });
 
           after(function() {
-            return appium.finish(driver);
+            return appium.finish(clientApp.driver);
           });
 
           beforeEach(function() {
-            return appium.init(clientApp)
-              .then(d => {
-                driver = d;
-              });
+            return appium.init(clientApp);
           });
 
           afterEach(function() {
             if (this.currentTest.state === 'failed') {
-              return appium.takeScreenshot(driver)
+              return appium.takeScreenshot(clientApp.driver)
                 .catch(console.error)
-                .then(() => appium.finish(driver));
+                .then(() => appium.finish(clientApp.driver));
             }
           });
 
-          clientApp.test(driver);
+          clientApp.test();
 
         });
       });

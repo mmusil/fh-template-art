@@ -1,9 +1,11 @@
 "use strict";
 
-function test(driver) {
+function test() {
+
+  const self = this;
 
   it('should sign in', function() {
-    return driver
+    return self.driver
       .elementByName("Sign In").click()
       .sleep(10000)
       .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[3]/XCUIElementTypeTextField[1]")
