@@ -15,7 +15,11 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[2]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeButton[1]')
         .click().sleep(5000)
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[2]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTextView[2]')
-        .text().should.become('Hello from FeedHenry');
+        .text().should.become('Hello from FeedHenry')
+      .then(() => {
+        console.log('try');
+        throw new Error('test');
+      });
   });
 
   it('should save value to Data Browser', function() {
