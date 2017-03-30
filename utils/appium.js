@@ -34,7 +34,7 @@ function init(clientApp) {
     running = true;
 
     if (clientApp.cordova) {
-      return this.webviewContext();
+      return this.webviewContext(clientApp.driver);
     }
   })
   // wait for the app to initialize
