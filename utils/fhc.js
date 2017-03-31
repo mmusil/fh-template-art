@@ -351,6 +351,57 @@ function getCloudUrl(cloudAppId,environment) {
   });
 }
 
+function addEnvironmentVariable(appId, envId, varName, varValue) {
+  return new Promise(function(resolve, reject) {
+    fh.call({_:[
+      `box/api/apps/${appId}/env/${envId}/envvars`,
+      'POST',
+      {
+        name: varName,
+        value: varValue
+      }
+    ]}, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve(result);
+    });
+  });
+}
+
+function pushEnvironmentVariables(appId, envId) {
+  return new Promise(function(resolve, reject) {
+    fh.call({_:[
+      `box/api/apps/${appId}/env/${envId}/envvars/push`,
+      'POST',
+      {}
+    ]}, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve(result);
+    });
+  });
+}
+
+function associateService(projectId, serviceId) {
+  return new Promise(function(resolve, reject) {
+    fh.call({_:[
+      `box/api/projects/${projectId}/connectors`,
+      'PUT',
+      [serviceId]
+    ]}, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve(result);
+    });
+  });
+}
+
 module.exports = {
   init: init,
   appDeploy: appDeploy,
@@ -375,5 +426,8 @@ module.exports = {
   ping: ping,
   getUserKey: getUserKey,
   getAppKey: getAppKey,
-  getCloudUrl: getCloudUrl
+  getCloudUrl: getCloudUrl,
+  addEnvironmentVariable: addEnvironmentVariable,
+  pushEnvironmentVariables: pushEnvironmentVariables,
+  associateService: associateService
 };

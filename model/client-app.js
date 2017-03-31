@@ -7,6 +7,7 @@ const git = require('../utils/git');
 const rimraf = require('../utils/rimraf');
 const path = require('path');
 const credConfig = require('../config/credentials.json');
+const databrowser = require('../utils/databrowser');
 
 class ClientApp {
 
@@ -21,6 +22,7 @@ class ClientApp {
 
     this.prepareCredBundle = this.prepareCredBundle.bind(this);
     this.prepare = this.prepare.bind(this);
+    this.prepareSync = this.prepareSync.bind(this);
     this.editFile = this.editFile.bind(this);
     this.findSuitableCredBundle = this.findSuitableCredBundle.bind(this);
     this.sendPushNotification = this.sendPushNotification.bind(this);
@@ -70,9 +72,10 @@ class ClientApp {
         this.environment = env.label;
       })
       .then(this.getUserDetails)
+      .then(this.getCloudHostURL)
       .then(() => {
-        if (this.projectTemplateId === 'welcome_project' || this.projectTemplateId === 'sync_project') {
-          return this.getCloudHostURL();
+        if (this.projectTemplateId === 'sync_project') {
+          return this.prepareSync();
         }
       })
       .then(() => {
@@ -85,6 +88,10 @@ class ClientApp {
           return this.prepareSAML();
         }
       });
+  }
+
+  prepareSync() {
+    return databrowser.deleteAllRows(this, 'myShoppingList');
   }
 
   editFile(fileName, editFunc) {
