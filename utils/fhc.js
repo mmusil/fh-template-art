@@ -351,6 +351,20 @@ function getCloudUrl(cloudAppId,environment) {
   });
 }
 
+function listEnvironmentVariables(appId, envId) {
+  return new Promise(function(resolve, reject) {
+    fh.call({_:[
+      `box/api/apps/${appId}/env/${envId}/envvars`
+    ]}, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve(result);
+    });
+  });
+}
+
 function addEnvironmentVariable(appId, envId, varName, varValue) {
   return new Promise(function(resolve, reject) {
     fh.call({_:[
@@ -368,6 +382,34 @@ function addEnvironmentVariable(appId, envId, varName, varValue) {
       resolve(result);
     });
   });
+}
+
+function updateEnvironmentVariable(appId, envId, varName, varValue) {
+  return listEnvironmentVariables(appId, envId)
+    .then(vars => {
+      const varDetails = vars.find(v => v.varName === varName);
+
+      if (!varDetails) {
+        return addEnvironmentVariable(appId, envId, varName, varValue);
+      }
+
+      return new Promise(function(resolve, reject) {
+        fh.call({_:[
+          `box/api/apps/${appId}/env/${envId}/envvars/${varDetails.guid}`,
+          'PUT',
+          {
+            name: varName,
+            value: varValue
+          }
+        ]}, (err, result) => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve(result);
+        });
+      });
+    });
 }
 
 function pushEnvironmentVariables(appId, envId) {
@@ -427,7 +469,9 @@ module.exports = {
   getUserKey: getUserKey,
   getAppKey: getAppKey,
   getCloudUrl: getCloudUrl,
+  listEnvironmentVariables: listEnvironmentVariables,
   addEnvironmentVariable: addEnvironmentVariable,
+  updateEnvironmentVariable: updateEnvironmentVariable,
   pushEnvironmentVariables: pushEnvironmentVariables,
   associateService: associateService
 };

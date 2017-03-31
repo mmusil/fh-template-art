@@ -5,7 +5,6 @@ const rimraf = require('../utils/rimraf');
 const fhc = require('../utils/fhc');
 const config = require('../config/common.json');
 const async = require('../utils/async');
-const studio = require('../utils/studio');
 const fs = require('fs');
 const exec = require('../utils/exec');
 const samlConfig = require('../config/saml.json');
@@ -18,6 +17,9 @@ class SAML {
 
     this.prepare = this.prepare.bind(this);
     this._prepareService = this._prepareService.bind(this);
+    this._setVariables = this._setVariables.bind(this);
+    this._getIssuer = this._getIssuer.bind(this);
+    this._associate = this._associate.bind(this);
     this._createService = this._createService.bind(this);
     this._deployCloudApp = this._deployCloudApp.bind(this);
     this._tryToReuseExistingService = this._tryToReuseExistingService.bind(this);
@@ -30,13 +32,9 @@ class SAML {
     console.log('Preparing SAML');
 
     return rimraf(this.tempFolder)
-      .then(() => fhc.environmentRead(config.environment))
-      .then(env => {
-        this.environment = env.label;
-      })
       .then(this._prepareService)
-      .then(() => studio.saml.associateService(this.project))
-      .then(() => studio.saml.associateSAML(this.project, this.environment));
+      .then(() => fhc.associateService(this.project.details.guid, this.service.guid))
+      .then(this._associate);
   }
 
   _prepareService() {
@@ -47,18 +45,56 @@ class SAML {
         if (!reused) {
           return this._createService()
             .then(this._deployCloudApp)
-            .then(() => studio.saml.setVariables(this))
-            .then(() => studio.saml.getExampleUrl(this))
-            .then(() => studio.saml.getIssuer(this))
+            .then(this._setVariables)
+            .then(this._getIssuer)
             .then(this._addSP);
         }
-      })
-      .then(() => {
-        this.project.saml = {
-          service: this.service,
-          serviceId: this.cloudApp.guid
-        };
       });
+  }
+
+  _setVariables() {
+    console.log('Setting SAML variables');
+
+    return fhc.addEnvironmentVariable(
+      this.cloudApp.guid,
+      config.environment,
+      'SAML_ENTRY_POINT',
+      samlConfig.entryPoint
+    )
+    .then(() => fhc.addEnvironmentVariable(
+      this.cloudApp.guid,
+      config.environment,
+      'SAML_AUTH_CONTEXT',
+      samlConfig.authContext
+    ))
+    .then(() => fhc.addEnvironmentVariable(
+      this.cloudApp.guid,
+      config.environment,
+      'SAML_CERT',
+      samlConfig.cert
+    ))
+    .then(() => fhc.pushEnvironmentVariables(this.cloudApp.guid, config.environment));
+  }
+
+  _getIssuer() {
+    console.log('Getting SAML issuer');
+
+    return fhc.getCloudUrl(this.cloudApp.guid, config.environment)
+      .then(url => {
+        this.issuer = url + '/login/callback';
+      });
+  }
+
+  _associate() {
+    console.log('Associating SAML with project');
+
+    return fhc.updateEnvironmentVariable(
+      this.project.cloudApp.guid,
+      config.environment,
+      'SAML_SERVICE',
+      this.cloudApp.guid
+    )
+    .then(() => fhc.pushEnvironmentVariables(this.project.cloudApp.guid, config.environment));
   }
 
   _createService() {
