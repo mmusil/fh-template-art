@@ -446,7 +446,7 @@ function associateService(projectId, serviceId) {
 
 function gitPull(projectId, appId) {
   let requestId;
-  let status;
+  let complete;
 
   return request()
     .then(waitForComplete);
@@ -455,7 +455,7 @@ function gitPull(projectId, appId) {
     return waitSec()
       .then(getStatus)
       .then(() => {
-        if (status !== 'complete') {
+        if (!complete) {
           return waitForComplete();
         }
       });
@@ -479,7 +479,7 @@ function gitPull(projectId, appId) {
           return reject(err);
         }
 
-        requestId = result.cacheKeys[0];
+        requestId = result.error.cacheKeys[0];
 
         resolve();
       });
@@ -495,7 +495,7 @@ function gitPull(projectId, appId) {
           return reject(err);
         }
 
-        status = result.status;
+        complete = result.progress === 100;
 
         resolve();
       });
