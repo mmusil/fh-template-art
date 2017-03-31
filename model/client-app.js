@@ -104,7 +104,7 @@ class ClientApp {
       .then(() => git.add(fileName, tempFolder))
       .then(() => git.commit('Updated bundleId', tempFolder))
       .then(() => git.push('origin', 'master', tempFolder))
-      .then(() => studio.pullApp(this));
+      .then(() => fhc.gitPull(this.project.guid, this.details.guid));
   }
 
   sendPushNotification() {

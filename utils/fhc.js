@@ -444,6 +444,65 @@ function associateService(projectId, serviceId) {
   });
 }
 
+function gitPull(projectId, appId) {
+  let requestId;
+  let status;
+
+  return request()
+    .then(waitForComplete);
+
+  function waitForComplete() {
+    return waitSec()
+      .then(getStatus)
+      .then(() => {
+        if (status !== 'complete') {
+          return waitForComplete();
+        }
+      });
+  }
+
+  function waitSec() {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
+  }
+
+  function request() {
+    return new Promise(function(resolve, reject) {
+      fh.call({_:[
+        `box/api/projects/${projectId}/apps/${appId}/pull`,
+        'POST'
+      ]}, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+
+        requestId = result.cacheKeys[0];
+
+        resolve();
+      });
+    });
+  }
+
+  function getStatus() {
+    return new Promise(function(resolve, reject) {
+      fh.call({_:[
+        `api/v2/logs/${requestId}`
+      ]}, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+
+        status = result.status;
+
+        resolve();
+      });
+    });
+  }
+}
+
 module.exports = {
   init: init,
   appDeploy: appDeploy,
@@ -473,5 +532,6 @@ module.exports = {
   addEnvironmentVariable: addEnvironmentVariable,
   updateEnvironmentVariable: updateEnvironmentVariable,
   pushEnvironmentVariables: pushEnvironmentVariables,
-  associateService: associateService
+  associateService: associateService,
+  gitPull: gitPull
 };
