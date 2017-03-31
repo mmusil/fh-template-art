@@ -150,7 +150,7 @@ class ClientApp {
   getCloudHostURL() {
     console.log('Reading deployed cloud app URL');
 
-    fhc.getCloudUrl(this.cloudApp.guid, this.environment)
+    return fhc.getCloudUrl(this.cloudApp.guid, this.environment)
     .then(res=>{
       this.cloudHost = res;
     },
