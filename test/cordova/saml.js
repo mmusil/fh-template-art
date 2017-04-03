@@ -10,12 +10,19 @@ function test() {
     return self.driver
       .elementByCss('.sign-in-button').click()
       .sleep(10000)
+      .then(() => self.driver.contexts())
+      .then(contexts => self.driver.context(contexts[2]))
+      .elementByCss('#username').sendKeys("student")
+      .elementByCss('#password').sendKeys("studentpass")
+      .elementByCss('#regularsubmit').isDisplayed()
+      .then(visible => {
+        if (visible) {
+          return self.driver.elementByCss('#regularsubmit').click();
+        } else {
+          return self.driver.elementByCss('#mobilesubmit').click();
+        }
+      })
       .context('NATIVE_APP')
-      .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[3]/XCUIElementTypeTextField[1]")
-        .sendKeys("student")
-      .elementByXPath("//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[5]/XCUIElementTypeSecureTextField[1]")
-        .sendKeys("studentpass")
-      .elementByName("Login").click()
       .sleep(10000)
       .alertText().should.eventually.include('Great, you\'re signed in!')
       .dismissAlert()
