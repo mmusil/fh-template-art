@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1018818352279",
+    "firebase_url": "https://etoe-test.firebaseio.com",
+    "project_id": "etoe-test",
+    "storage_bucket": "etoe-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018818352279:android:54d6c4f1a11f0be0",
+        "android_client_info": {
+          "package_name": "org.feedhenry.pushstarter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1018818352279-nn9v8ooh6id6th529oea18q6g0kujrpf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtkAZ6eG9nSgsAIn-a8PPSrGQeyuBsVwg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

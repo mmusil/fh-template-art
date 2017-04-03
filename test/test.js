@@ -12,7 +12,10 @@ describe('Tests for client apps', function() {
   this.timeout(15 * 60 * 1000);
 
   before(function() {
-    return fhc.init(config.host, config.username, config.password);
+    return fhc.init(config.host, config.username, config.password)
+    .then(loginTokens => {
+      config.loginTokens = loginTokens;
+    });
   });
 
   testConfig.platforms.forEach(platform => {
