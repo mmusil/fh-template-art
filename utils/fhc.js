@@ -1,6 +1,7 @@
 "use strict";
 
 const fh = require('fh-fhc');
+const projects = require('../fixtures/projects.json');
 
 function init(host, username, password) {
   var cfg = {
@@ -446,7 +447,6 @@ function associateService(projectId, serviceId) {
 
 function gitPull(projectId, appId) {
   let requestId;
-  let complete;
 
   return request()
     .then(waitForComplete);
@@ -454,7 +454,7 @@ function gitPull(projectId, appId) {
   function waitForComplete() {
     return waitSec()
       .then(getStatus)
-      .then(() => {
+      .then(complete => {
         if (!complete) {
           return waitForComplete();
         }
@@ -495,9 +495,73 @@ function gitPull(projectId, appId) {
           return reject(err);
         }
 
-        complete = result.progress === 100;
+        resolve(result.progress === 100);
+      });
+    });
+  }
+}
+
+function createProject(name, templateId) {
+  let requestIds;
+  let project;
+
+  return request()
+    .then(waitForComplete)
+    .then(() => project);
+
+  function waitForComplete() {
+    return waitSec()
+      .then(getStatus)
+      .then(complete => {
+        if (!complete) {
+          return waitForComplete();
+        }
+      });
+  }
+
+  function waitSec() {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
+  }
+
+  function request() {
+    projects[templateId].title = name;
+
+    return new Promise(function(resolve, reject) {
+      fh.call({_:[
+        'box/api/projects/',
+        'POST',
+        projects[templateId]
+      ]}, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+
+        project = result.error;
+        requestIds = project.apps.map(app => ({ cacheKey: app.scmCacheKey }));
 
         resolve();
+      });
+    });
+  }
+
+  function getStatus() {
+    return new Promise(function(resolve, reject) {
+      fh.call({_:[
+        'api/v2/logs',
+        'POST',
+        { cacheKeys: requestIds }
+      ]}, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+
+        const complete = result.reduce((comp, app) => comp && app.progress === 100, true);
+
+        resolve(complete);
       });
     });
   }
@@ -533,5 +597,6 @@ module.exports = {
   updateEnvironmentVariable: updateEnvironmentVariable,
   pushEnvironmentVariables: pushEnvironmentVariables,
   associateService: associateService,
-  gitPull: gitPull
+  gitPull: gitPull,
+  createProject: createProject
 };

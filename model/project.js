@@ -3,7 +3,6 @@
 const async = require('../utils/async');
 const fhc = require('../utils/fhc');
 const config = require('../config/common.json');
-const studio = require('../utils/studio');
 const SAML = require('./saml');
 
 class Project {
@@ -49,26 +48,10 @@ class Project {
 
     const projectName = config.prefix + new Date().getTime();
 
-    if (this.templateId === 'hello_world_project') {
-      return this._createHelloWorld(projectName);
-    }
-
     return async.retry(
-      () => fhc.projectCreate(projectName, this.templateId),
+      () => fhc.createProject(projectName, this.templateId),
       config.retries
     ).then(this._storeDetails);
-  }
-
-  _createHelloWorld(projectName) {
-    return studio.createHelloWorldProject(projectName)
-      .then(fhc.projectsListNoApps)
-      .then(projects =>
-        projects.find(project => project.title === projectName)
-      )
-      .then(project =>
-        fhc.projectRead(project.guid)
-      )
-      .then(this._storeDetails);
   }
 
   _deployCloudApp() {

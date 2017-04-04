@@ -1,0 +1,167 @@
+{
+  "hello_world_project": {
+    "template": {
+      "id": "hello_world_project",
+      "type": "default",
+      "appTemplates": [
+        {
+          "type": "cloud_nodejs",
+          "id": "hello_world_mbaas_instance",
+          "name": "Cloud App"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "native_ios_swift_helloworld_app",
+          "name": "Native iOS (Swift) hello world app"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "native_ios_objectivec_helloworld_app",
+          "name": "Native iOS (Objective-C) hello world app"
+        },
+        {
+          "type": "client_advanced_hybrid",
+          "id": "hello_world_hybrid_app",
+          "name": "Cordova App"
+        },
+        {
+          "type": "client_native_android",
+          "id": "helloworld_native_android_gradle_client",
+          "name": "Helloworld Native Android Gradle App"
+        }
+      ]
+    }
+  },
+  "welcome_project": {
+    "template": {
+      "id": "welcome_project",
+      "type": "other",
+      "appTemplates": [
+        {
+          "type": "cloud_nodejs",
+          "id": "welcome_project_cloud",
+          "name": "Welcome Project-cloud"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "welcome_project_ios_swift",
+          "name": "Welcome Project iOS (Swift)"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "welcome_project_ios_objectivec",
+          "name": "Welcome Project iOS (Objective-C)"
+        },
+        {
+          "type": "client_advanced_hybrid",
+          "id": "welcome_project_client",
+          "name": "Welcome Project-client"
+        },
+        {
+          "type": "client_native_android",
+          "id": "welcome_project_android_gradle",
+          "name": "Welcome Project Android Gradle"
+        }
+      ]
+    }
+  },
+  "sync_project": {
+    "template": {
+      "id": "sync_project",
+      "type": "default",
+      "appTemplates": [
+        {
+          "type": "cloud_nodejs",
+          "id": "sync_cloud",
+          "name": "Sync Cloud App"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "sync_ios_swift_app",
+          "name": "Sync iOS (Swift) App"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "sync_ios_objectivec_app",
+          "name": "Sync iOS (Objective-C) App"
+        },
+        {
+          "type": "client_advanced_hybrid",
+          "id": "sync_app",
+          "name": "Sync App"
+        },
+        {
+          "type": "client_native_android",
+          "id": "sync_android_app",
+          "name": "Sync Android App"
+        }
+      ]
+    }
+  },
+  "saml_project": {
+    "template": {
+      "id": "saml_project",
+      "type": "other",
+      "appTemplates": [
+        {
+          "type": "cloud_nodejs",
+          "id": "saml_cloud",
+          "name": "SAML Cloud"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "saml_ios_swift",
+          "name": "SAML iOS (Swift)"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "saml_ios_objc",
+          "name": "SAML iOS (Objective-C)"
+        },
+        {
+          "type": "client_advanced_hybrid",
+          "id": "saml_app",
+          "name": "SAML Client"
+        },
+        {
+          "type": "client_native_android",
+          "id": "saml_android",
+          "name": "SAML Android"
+        }
+      ]
+    }
+  },
+  "pushstarter_project": {
+    "template": {
+      "id": "pushstarter_project",
+      "type": "default",
+      "appTemplates": [
+        {
+          "type": "cloud_nodejs",
+          "id": "hello_push_mbaas_instance",
+          "name": "Cloud App"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "pushstarter_ios_swift_app",
+          "name": "Simple iOS (Swift) Push App"
+        },
+        {
+          "type": "client_native_ios",
+          "id": "pushstarter_ios_objc-app",
+          "name": "Simple iOS (Objective-C) Push App"
+        },
+        {
+          "type": "client_advanced_hybrid",
+          "id": "pushstarter_cordova_app",
+          "name": "Simple Cordova Push App"
+        },
+        {
+          "type": "client_native_android",
+          "id": "pushstarter_android_app",
+          "name": "Simple Android Push App"
+        }
+      ]
+    }
+  }
+}
