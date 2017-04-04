@@ -25,7 +25,7 @@ class AndroidClientApp extends ClientApp {
   }
 
   preparePush() {
-    return push.startPush(this,credConfig.android.push,'appium-android')
+    return push.startPush(this,credConfig.android.push,'appium-android','android')
     .then(() =>
       this.editFile('app/google-services.json', function(file) {
         var fixtureFile = path.resolve(__dirname,'../fixtures/google-services.json');
