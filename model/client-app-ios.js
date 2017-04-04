@@ -14,8 +14,8 @@ const credConfig = require('../config/credentials.json');
 
 class IOSClientApp extends ClientApp {
 
-  constructor(projectTemplateId, clientAppName, test, cordova, scheme, bundleId) {
-    super(projectTemplateId, clientAppName, 'ios', test, cordova);
+  constructor(projectTemplateId, clientAppName, test, type, scheme, bundleId, repo, branch) {
+    super(projectTemplateId, clientAppName, 'ios', test, type, repo, branch);
 
     this.scheme = scheme;
     this.bundleId = bundleId;

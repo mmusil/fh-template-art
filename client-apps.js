@@ -10,10 +10,12 @@ const clientApps = {
       new AndroidClientApp('welcome_project', 'Welcome Project Android Gradle', require('./test/android/welcome'))
     ],
     cordova: [
-      new AndroidClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
-      // new AndroidClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
-      // new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true),
-      new AndroidClientApp('sync_project', 'Sync App', require('./test/cordova/sync'), true)
+      new AndroidClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), 'client_advanced_hybrid'),
+      // new AndroidClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), 'client_advanced_hybrid'),
+      // new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), 'client_advanced_hybrid'),
+      new AndroidClientApp('sync_project', 'Sync App', require('./test/cordova/sync'), 'client_advanced_hybrid')
+    ],
+    light: [
     ]
   },
   ios: {
@@ -22,18 +24,21 @@ const clientApps = {
       new IOSClientApp('hello_world_project', 'Native iOS (Objective-C) hello world app', require('./test/ios/helloworld')),
       new IOSClientApp('welcome_project', 'Welcome Project iOS (Swift)', require('./test/ios/welcome')),
       new IOSClientApp('welcome_project', 'Welcome Project iOS (Objective-C)', require('./test/ios/welcome')),
-      // new IOSClientApp('pushstarter_project', 'Simple iOS (Swift) Push App', require('./test/ios/push'), false, 'PushStarter', 'org.aerogear.helloworldpush'),
-      // new IOSClientApp('pushstarter_project', 'Simple iOS (Objective-C) Push App', require('./test/ios/push'), false, 'PushStarter', 'org.aerogear.helloworldpush'),
+      // new IOSClientApp('pushstarter_project', 'Simple iOS (Swift) Push App', require('./test/ios/push'), 'native', 'PushStarter', 'org.aerogear.helloworldpush'),
+      // new IOSClientApp('pushstarter_project', 'Simple iOS (Objective-C) Push App', require('./test/ios/push'), 'native', 'PushStarter', 'org.aerogear.helloworldpush'),
       new IOSClientApp('saml_project', 'SAML iOS (Swift)', require('./test/ios/saml')),
-      new IOSClientApp('saml_project', 'SAML iOS (Objective-C)', require('./test/ios/saml'), false, 'saml-ios-app'),
+      new IOSClientApp('saml_project', 'SAML iOS (Objective-C)', require('./test/ios/saml'), 'native', 'saml-ios-app'),
       // new IOSClientApp('sync_project', 'Sync iOS (Swift) App', require('./test/ios/sync')),
       new IOSClientApp('sync_project', 'Sync iOS (Objective-C) App', require('./test/ios/sync'))
     ],
     cordova: [
-      new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), true),
-      new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), true),
-      new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), true),
-      new IOSClientApp('sync_project', 'Sync App', require('./test/cordova/sync'), true)
+      new IOSClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), 'client_advanced_hybrid'),
+      new IOSClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), 'client_advanced_hybrid'),
+      new IOSClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), 'client_advanced_hybrid'),
+      new IOSClientApp('sync_project', 'Sync App', require('./test/cordova/sync'), 'client_advanced_hybrid')
+    ],
+    light: [
+      new IOSClientApp('welcome_project', 'Light', require('./test/cordova/welcome'), 'client_hybrid', null, null, 'https://github.com/feedhenry-templates/welcome-app', 'FH-v3.13.1')
     ]
   }
 };

@@ -567,6 +567,33 @@ function createProject(name, templateId) {
   }
 }
 
+function importApp(projectId, title, type, repo, branch, env) {
+  const data = {
+    title: title,
+    environment: { id: env },
+    template: {
+      type: type,
+      repoUrl: repo,
+      repoBranch: `refs/heads/${branch}`,
+      imported: true
+    }
+  };
+
+  return new Promise((resolve, reject) => {
+    fh.call({_:[
+      `box/api/projects/${projectId}/apps`,
+      'POST',
+      data
+    ]}, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve(result.error);
+    });
+  });
+}
+
 module.exports = {
   init: init,
   appDeploy: appDeploy,
@@ -598,5 +625,6 @@ module.exports = {
   pushEnvironmentVariables: pushEnvironmentVariables,
   associateService: associateService,
   gitPull: gitPull,
-  createProject: createProject
+  createProject: createProject,
+  importApp: importApp
 };

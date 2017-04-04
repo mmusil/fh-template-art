@@ -12,6 +12,7 @@ class Project {
     this.templateId = clientApp.projectTemplateId;
 
     this.prepare = this.prepare.bind(this);
+    this._prepareClientApp = this._prepareClientApp.bind(this);
     this._create = this._create.bind(this);
     this._deployCloudApp = this._deployCloudApp.bind(this);
     this._tryToReuseExisting = this._tryToReuseExisting.bind(this);
@@ -30,6 +31,7 @@ class Project {
             .then(this._deployCloudApp);
         }
       })
+      .then(this._prepareClientApp)
       .then(() => {
         this.clientApp.project = this.details;
         this.clientApp.cloudApp = this.cloudApp;
@@ -41,6 +43,25 @@ class Project {
           return saml.prepare();
         }
       });
+  }
+
+  _prepareClientApp() {
+    const app = this.details.apps.find(app => app.title === this.clientApp.name);
+
+    if (this.clientApp.repo && !app) {
+      console.log('Importing client app');
+
+      return fhc.importApp(
+        this.details.guid,
+        this.clientApp.name,
+        this.clientApp.type,
+        this.clientApp.repo,
+        this.clientApp.branch,
+        config.environment
+      ).then(app => {
+        this.details.apps.push(app);
+      });
+    }
   }
 
   _create() {
@@ -106,11 +127,17 @@ class Project {
         .then(projectDetails => {
           project.apps = projectDetails.apps;
         })
-    ).then(() => suitableProjects.filter(project =>
-      project.apps.find(app =>
-        app.title === this.clientApp.name
-      )
-    ));
+    ).then(() => {
+      if (this.clientApp.repo) {
+        return suitableProjects;
+      }
+
+      return suitableProjects.filter(project =>
+        project.apps.find(app =>
+          app.title === this.clientApp.name
+        )
+      );
+    });
   }
 
   _findRunningCloudApp(projects) {

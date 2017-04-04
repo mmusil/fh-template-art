@@ -11,14 +11,17 @@ const databrowser = require('../utils/databrowser');
 
 class ClientApp {
 
-  constructor(projectTemplateId, name, platform, test, cordova) {
+  constructor(projectTemplateId, name, platform, test, type, repo, branch) {
     this.projectTemplateId = projectTemplateId;
     this.name = name;
     this.platform = platform;
     this.test = test.bind(this);
     this.push = projectTemplateId === 'pushstarter_project';
-    this.cordova = cordova;
+    this.type = type;
+    this.cordova = type === 'client_advanced_hybrid' || type === 'client_hybrid';
     this.buildType = 'debug';
+    this.repo = repo;
+    this.branch = branch;
 
     this.prepareCredBundle = this.prepareCredBundle.bind(this);
     this.prepare = this.prepare.bind(this);

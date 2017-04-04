@@ -8,8 +8,8 @@ const config = require('../config/common.json');
 
 class AndroidClientApp extends ClientApp {
 
-  constructor(projectTemplateId, clientAppName, test, cordova) {
-    super(projectTemplateId, clientAppName, 'android', test, cordova);
+  constructor(projectTemplateId, clientAppName, test, type, repo, branch) {
+    super(projectTemplateId, clientAppName, 'android', test, type, repo, branch);
 
     this.prepareSAML = this.prepareSAML.bind(this);
     this.preparePush = this.preparePush.bind(this);

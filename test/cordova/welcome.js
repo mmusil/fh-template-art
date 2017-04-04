@@ -40,17 +40,22 @@ function test() {
       .elementByCss('.weather-sample').click()
       .sleep(2000)
       .elementByCss('.get-geo-btn').click()
-      .sleep(1000)
-      .context('NATIVE_APP')
-      .hasElementByName('Get My Weather Info')
-      .then(exists => {
-        if (!exists) {
-          return self.driver.acceptAlert().sleep(2000);
+      .sleep(2000)
+      .then(() => {
+        if (self.type !== 'client_hybrid') {
+          return self.driver
+            .context('NATIVE_APP')
+            .hasElementByName('Get My Weather Info')
+            .then(exists => {
+              if (!exists) {
+                return self.driver.acceptAlert().sleep(2000);
+              }
+            })
+            .then(() => appium.webviewContext(self.driver))
+            .elementByCss('.get-weather-btn').click()
+            .sleep(2000);
         }
       })
-      .then(() => appium.webviewContext(self.driver))
-      .elementByCss('.get-weather-btn').click()
-      .sleep(2000)
       .elementByCss('.btn.back').click()
       .sleep(2000);
   });

@@ -23,7 +23,7 @@ const iostype = {
 program
   .version(pkg.version)
   .option('-l, --platform <platform>', 'platform (android|ios|all)', /^(android|ios|all)$/i, 'all')
-  .option('-t, --type <type>', 'type (native|cordova|all)', /^(native|cordova|all)$/i, 'all')
+  .option('-t, --type <type>', 'type (native|cordova|light|all)', /^(native|cordova|light|all)$/i, 'all')
   .option('-m, --template <template>', 'template (welcome|helloworld|push|saml|sync|all)', /^(welcome|helloworld|push|saml|sync|all)$/i, 'all')
   .option('-i, --iostype <iostype>', 'iOS type (objc|swift|all)', /^(objc|swift|all)$/i, 'all')
   .parse(process.argv);
@@ -37,7 +37,7 @@ if (program.platform === 'all') {
 }
 
 if (program.type === 'all') {
-  settings.types = ['native', 'cordova'];
+  settings.types = ['native', 'cordova', 'light'];
 } else {
   settings.types = [program.type];
 }
