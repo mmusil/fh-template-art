@@ -18,6 +18,7 @@
     "commander": "^2.9.0",
     "extract-zip": "^1.6.0",
     "fh-fhc": "http://npm.skunkhenry.com/fh-fhc/-/fh-fhc-2.17.3-577.tgz",
+    "fs-promise": "^2.0.2",
     "mocha": "^3.2.0",
     "mocha-steps": "^1.0.2",
     "plist": "^2.0.1",

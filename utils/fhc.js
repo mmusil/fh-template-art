@@ -21,11 +21,12 @@ function init(host, username, password) {
         if (err) {
           return reject(err);
         }
-        fh.login({_:[username, password]}, function(err) {
+        fh.login({_:[username, password]}, function(err,loginTokens) {
           if (err) {
             return reject(err);
           }
-          resolve();
+
+          return resolve({fhToken: loginTokens.login, csrf:loginTokens.csrf});
         });
       });
     });
