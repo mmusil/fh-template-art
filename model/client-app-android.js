@@ -2,9 +2,12 @@
 
 const fhc = require('../utils/fhc');
 const fs = require('fs');
+const fsp = require('fs-promise');
 const ClientApp = require('./client-app');
 const path = require('path');
 const config = require('../config/common.json');
+const push = require('../utils/push');
+const credConfig = require('../config/credentials.json');
 
 class AndroidClientApp extends ClientApp {
 
@@ -22,7 +25,13 @@ class AndroidClientApp extends ClientApp {
   }
 
   preparePush() {
-
+    return push.startPush(this,credConfig.android.push,'appium-android')
+    .then(() =>
+      this.editFile('app/google-services.json', function(file) {
+        var fixtureFile = path.resolve(__dirname,'../fixtures/google-services.json');
+        return fsp.copy(fixtureFile,file);
+      })
+    );
   }
 
   createCredBundle() {
