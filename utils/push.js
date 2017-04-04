@@ -58,39 +58,37 @@ function pushReadVariants(appObj, pushAppID) {
 
 }
 
-function enablePush(appObj, pushCred, variantName) {
+function enablePush(appObj, pushCred, variantName, platform) {
   console.log('Enabling new push server');
 
-  var boundary = '----fhTemplateArtBoundary';
 
   var headers = {
-    'Origin': `${config.host}`,
     'x-feedhenry-appguid': `${appObj.details.guid}`,
-    'Content-Type': `multipart/form-data; boundary=${boundary}`,
-    'Accept': 'application/json, text/plain, */*',
-    'Connection': 'keep-alive',
-    'Cookie': `feedhenry_v=3; feedhenry=${config.loginTokens.fhToken}; csrf=${config.loginTokens.csrf}; i18next=en`
+    'Cookie': `feedhenry_v=3; feedhenry=${config.loginTokens.fhToken}; csrf=${config.loginTokens.csrf}`
   };
-
-  var dataString = `--${boundary}\r\n`+
-    `Content-Disposition: form-data; name="pushApplicationName"\r\n\r\n`+
-    `${appObj.details.title}\r\n`+
-    `--${boundary}\r\n`+
-    `Content-Disposition: form-data; name="androidGoogleKey"\r\n\r\n`+
-    `${pushCred.serverKey}\r\n`+
-    `--${boundary}\r\n`+
-    `Content-Disposition: form-data; name="androidProjectNumber"\r\n\r\n`+
-    `${pushCred.senderId}\r\n`+
-    `--${boundary}\r\n`+
-    `Content-Disposition: form-data; name="androidVariantName"\r\n\r\n`+
-    `${variantName}\r\n`+
-    `--${boundary}--\r\n`;
+  var formData;
+  if (platform === 'android') {
+    formData = {
+      pushApplicationName: appObj.details.title,
+      androidGoogleKey: pushCred.serverKey,
+      androidProjectNumber: pushCred.senderId,
+      androidVariantName: variantName
+    };
+  } else {
+    formData = {
+      pushApplicationName: appObj.details.title,
+      iosProduction: 'false',
+      iosPassphrase: pushCred.password,
+      iosVariantName: variantName
+     // iosCertificate: fs.createReadStream(path.resolve(__dirname, '../fixtures/cert.p12'))
+    };
+  }
 
   var options = {
     url: `${config.host}/api/v2/ag-push/rest/applications/bootstrap`,
     method: 'POST',
     headers: headers,
-    body: dataString
+    formData: formData
   };
 
 
@@ -143,14 +141,14 @@ function sendNotification(appObj, pushCred, message) {
 
 }
 
-function startPush(appObj, pushCred, variantName) {
+function startPush(appObj, pushCred, variantName, platform) {
   console.log('Preparing push server');
 
   return pushInit(appObj)
     .then(pushAppId => pushReadVariants(appObj, pushAppId),
           err => {
             if (err === '204: No Content') {
-              return enablePush(appObj,pushCred,variantName);
+              return enablePush(appObj,pushCred,variantName,platform);
             }
             throw new Error(`Error is occured while enabling new push server - "${err}"`);
           })
