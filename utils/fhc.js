@@ -2,6 +2,7 @@
 
 const fh = require('fh-fhc');
 const projects = require('../fixtures/projects.json');
+const catchError = require('./catch-error');
 
 function init(host, username, password) {
   var cfg = {
@@ -506,7 +507,12 @@ function createProject(name, templateId) {
   let requestIds;
   let project;
 
+  console.log('Attempting to create project');
+
   return request()
+    .then(() => {
+      console.log('Project created, waiting for all the apps to be fetched');
+    })
     .then(waitForComplete)
     .then(() => project);
 
@@ -531,7 +537,7 @@ function createProject(name, templateId) {
   function request() {
     projects[templateId].title = name;
 
-    return new Promise(function(resolve, reject) {
+    return catchError(60 * 1000, (resolve, reject) => {
       fh.call({_:[
         'box/api/projects/',
         'POST',
@@ -546,10 +552,6 @@ function createProject(name, templateId) {
 
         resolve();
       });
-
-      setTimeout(() => {
-        reject('Project creation timed out');
-      }, 60 * 1000);
     });
   }
 
