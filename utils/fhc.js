@@ -546,6 +546,10 @@ function createProject(name, templateId) {
 
         resolve();
       });
+
+      setTimeout(() => {
+        reject('Project creation timed out');
+      }, 60 * 1000);
     });
   }
 

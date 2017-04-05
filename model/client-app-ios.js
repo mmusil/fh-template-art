@@ -11,6 +11,7 @@ const unzip = require('../utils/unzip');
 const plist = require('plist');
 const xml2js = require('../utils/xml2js');
 const credConfig = require('../config/credentials.json');
+const async = require('../utils/async');
 
 class IOSClientApp extends ClientApp {
 
@@ -95,7 +96,8 @@ class IOSClientApp extends ClientApp {
 
     const tempFolder = path.resolve(__dirname, '../temp');
 
-    return fhc.buildIOS(
+    return async.retry(
+      () => fhc.buildIOS(
         this.project.guid,
         this.details.guid,
         this.cloudApp.guid,
@@ -107,7 +109,7 @@ class IOSClientApp extends ClientApp {
         'true',
         this.credBundle.id,
         this.connection.tag
-      )
+      ), config.retries)
       .then(build => {
         this.build = build;
         this.buildZip = path.resolve(__dirname, '..', build[1].download.file);

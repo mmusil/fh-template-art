@@ -8,6 +8,7 @@ const path = require('path');
 const config = require('../config/common.json');
 const push = require('../utils/push');
 const credConfig = require('../config/credentials.json');
+const async = require('../utils/async');
 
 class AndroidClientApp extends ClientApp {
 
@@ -41,7 +42,8 @@ class AndroidClientApp extends ClientApp {
   build() {
     console.log('Building client app');
 
-    return fhc.buildAndroidDebug(
+    return async.retry(
+      () => fhc.buildAndroidDebug(
         this.project.guid,
         this.details.guid,
         this.cloudApp.guid,
@@ -50,7 +52,7 @@ class AndroidClientApp extends ClientApp {
         this.buildType,
         'true',
         this.connection.tag
-      )
+      ), config.retries)
       .then(build => {
         this.build = build;
         const buildApk = path.resolve(__dirname, '..', build[1].download.file);
