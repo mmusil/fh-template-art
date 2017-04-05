@@ -3,12 +3,12 @@
 This tool helps you automate E2E testing of client apps. Appium is used to test mobile applications.
 
 For every client app it tests it will:
-* try to find suitable project (one with name starting with prefix specified in config.js and with template_id matching client app), if such a project does not exist it will try to create it (unfortunately creating projects with fh-fhc seems to be unstable and often fails)
+* try to find suitable project (one with name starting with prefix specified in config/common.json and with template_id matching client app), if such a project does not exist it will try to create it
 * try to find running cloud app in the project, if it is not running it will try to deploy it
 * prepares connection between cloud and client app
 * prepares credentials bundle if needed (again the tool tries to find suitable one before it attempts to create new one)
 * for push starter apps:
-  * changeBundleId of the app to one specified in config.js (iOS specific)
+  * changeBundleId of the app to one specified in config/credentials.json (iOS specific)
   * enables push for the app
 * for SAML apps:
   * prepares SAML service in studio
@@ -60,4 +60,4 @@ To specify which client apps to test, use `npm run setup test` before `npm start
 
 ### Error during "before" phase
 
-As creation of projects and deployment of apps using fh-fhc is not very stable, it can fail. Tool tries to reuse existing projects. If it won't find any it will try to create it. With retries option in config.js you can specify how many times it should try to create project / deploy app. Another option is to create the projects (and deploy cloud apps) manually in studio. Just give it a name with prefix you've set in config.js.
+As creation of projects and deployment of apps using fh-fhc is not very stable, it can fail. Tool tries to reuse existing projects. If it won't find any it will try to create it. With retries option in config/common.json you can specify how many times it should try to create project / deploy app. Another option is to create the projects (and deploy cloud apps) manually in studio. Just give it a name with prefix you've set in config/common.json.
