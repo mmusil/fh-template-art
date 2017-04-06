@@ -2,7 +2,6 @@
 
 const ClientApp = require('./client-app');
 const path = require('path');
-const studio = require('../utils/studio');
 const config = require('../config/common.json');
 const fhc = require('../utils/fhc');
 const rimraf = require('../utils/rimraf');
@@ -94,13 +93,22 @@ class IOSClientApp extends ClientApp {
   }
 
   createCredBundle() {
-    this.credentials = {
-      key: path.resolve(__dirname, '..', this.credConfig.key),
-      cer: path.resolve(__dirname, '..', this.credConfig.cer),
-      prov: path.resolve(__dirname, '..', this.credConfig.provision)
-    };
-    return studio.ios.createCredBundle(this)
-      .then(this.prepareCredBundle);
+    console.log('Creating credentials bundle');
+
+    const key = path.resolve(__dirname, '..', this.credConfig.key);
+    const cer =  path.resolve(__dirname, '..', this.credConfig.cer);
+    const prov = path.resolve(__dirname, '..', this.credConfig.provision);
+
+    return fhc.createCredBundle(
+      config.prefix + (this.push ? 'push-' : 'normal-') + new Date().getTime(),
+      this.buildType,
+      this.platform,
+      key,
+      cer,
+      prov
+    ).then(id => {
+      this.credBundleId = id;
+    });
   }
 
   build() {
@@ -119,7 +127,7 @@ class IOSClientApp extends ClientApp {
         this.credConfig.password,
         this.credConfig.password,
         'true',
-        this.credBundle.id,
+        this.credBundleId,
         this.connection.tag
       ), config.retries)
       .then(build => {

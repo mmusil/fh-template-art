@@ -4,6 +4,9 @@ const fh = require('fh-fhc');
 const projects = require('../fixtures/projects.json');
 const catchError = require('./catch-error');
 const async = require('./async');
+const config = require('../config/common.json');
+const fs = require('fs');
+const request = require('request');
 
 function init(host, username, password) {
   var cfg = {
@@ -565,6 +568,39 @@ function importApp(projectId, title, type, repo, branch, env) {
   });
 }
 
+function createCredBundle(name, type, platform, key, cer, prov) {
+  var headers = {
+    'X-CSRF-Token': config.loginTokens.csrf,
+    'Cookie': `feedhenry_v=3; feedhenry=${config.loginTokens.fhToken}; csrf=${config.loginTokens.csrf}`
+  };
+
+  var formData = {
+    bundleName: name,
+    bundleType: type,
+    platform: platform,
+    privatekey: fs.createReadStream(key),
+    certificate: fs.createReadStream(cer),
+    provisioning: fs.createReadStream(prov)
+  };
+
+  var options = {
+    url: `${config.host}/box/api/credentials`,
+    method: 'POST',
+    headers: headers,
+    formData: formData
+  };
+
+  return new Promise((resolve, reject) => {
+    request(options, (error, response, body) => {
+      if (error || response.statusCode !== 201) {
+        return reject(error ? error : `${response.statusCode}: ${response.statusMessage}`);
+      }
+
+      resolve(JSON.parse(body).id);
+    });
+  });
+}
+
 module.exports = {
   init: init,
   appDeploy: appDeploy,
@@ -597,5 +633,6 @@ module.exports = {
   associateService: associateService,
   gitPull: gitPull,
   createProject: createProject,
-  importApp: importApp
+  importApp: importApp,
+  createCredBundle: createCredBundle
 };

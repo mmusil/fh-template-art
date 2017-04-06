@@ -42,7 +42,7 @@ class ClientApp {
         if (!credBundle) {
           return this.createCredBundle();
         }
-        this.credBundle = credBundle;
+        this.credBundleId = credBundle.id;
       });
   }
 
