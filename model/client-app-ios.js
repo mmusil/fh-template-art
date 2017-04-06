@@ -12,6 +12,8 @@ const plist = require('plist');
 const xml2js = require('../utils/xml2js');
 const credConfig = require('../config/credentials.json');
 const async = require('../utils/async');
+const push = require('../utils/push');
+const bfCleanup = require('../utils/bf-cleanup');
 
 class IOSClientApp extends ClientApp {
 
@@ -21,6 +23,7 @@ class IOSClientApp extends ClientApp {
     this.scheme = scheme;
     this.bundleId = bundleId;
 
+    this.cleanup = this.cleanup.bind(this);
     this.prepareSAML = this.prepareSAML.bind(this);
     this.preparePush = this.preparePush.bind(this);
     this.changeBundleId = this.changeBundleId.bind(this);
@@ -28,6 +31,10 @@ class IOSClientApp extends ClientApp {
     this.allowArbitraryLoadsCordova = this.allowArbitraryLoadsCordova.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.build = this.build.bind(this);
+  }
+
+  cleanup() {
+    return bfCleanup(this.buildId);
   }
 
   prepareSAML() {
@@ -43,7 +50,10 @@ class IOSClientApp extends ClientApp {
     console.log('Preparing push');
 
     return this.changeBundleId()
-      .then(() => studio.ios.enablePush(this));
+      .then(() => push.startPush(this,credConfig.ios.push,'ios','ios'))
+      .then(pushCred => {
+        this.pushCred = pushCred;
+      });
   }
 
   changeBundleId() {
@@ -111,7 +121,8 @@ class IOSClientApp extends ClientApp {
         this.connection.tag
       ), config.retries)
       .then(build => {
-        this.build = build;
+        console.log('');
+        this.buildId = build[0][0].cacheKey;
         this.buildZip = path.resolve(__dirname, '..', build[1].download.file);
       })
       .then(() => rimraf(tempFolder))

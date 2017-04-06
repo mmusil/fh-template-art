@@ -2,12 +2,12 @@
 
 const fhc = require('../utils/fhc');
 const config = require('../config/common.json');
-const studio = require('../utils/studio');
 const git = require('../utils/git');
 const rimraf = require('../utils/rimraf');
 const path = require('path');
 const credConfig = require('../config/credentials.json');
 const databrowser = require('../utils/databrowser');
+const push = require('../utils/push');
 
 class ClientApp {
 
@@ -110,8 +110,8 @@ class ClientApp {
       .then(() => fhc.gitPull(this.project.guid, this.details.guid));
   }
 
-  sendPushNotification() {
-    return studio.sendPushNotification(this);
+  sendPushNotification(message) {
+    return push.sendNotification(this, message);
   }
 
   prepareConnection() {

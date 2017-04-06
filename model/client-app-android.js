@@ -15,10 +15,15 @@ class AndroidClientApp extends ClientApp {
   constructor(projectTemplateId, clientAppName, test, type, repo, branch) {
     super(projectTemplateId, clientAppName, 'android', test, type, repo, branch);
 
+    this.cleanup = this.cleanup.bind(this);
     this.prepareSAML = this.prepareSAML.bind(this);
     this.preparePush = this.preparePush.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.build = this.build.bind(this);
+  }
+
+  cleanup() {
+
   }
 
   prepareSAML() {

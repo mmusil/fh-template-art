@@ -48,7 +48,8 @@ describe('Tests for client apps', function() {
           });
 
           after(function() {
-            return appium.finish(clientApp.driver);
+            return appium.finish(clientApp.driver)
+              .then(clientApp.cleanup);
           });
 
           beforeEach(function() {

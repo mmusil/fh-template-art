@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "host": "",
+    "user": "",
+    "pass": "",
+    "keyFile": "fixtures/bf-ios-key"
+  }
+}

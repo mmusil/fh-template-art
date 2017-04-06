@@ -3,6 +3,8 @@
 
 const config = require('../config/common.json');
 const request = require('request');
+const path = require('path');
+const fs = require('fs');
 
 function pushInit(appObj) {
   console.log('Checking for existing push server');
@@ -79,8 +81,8 @@ function enablePush(appObj, pushCred, variantName, platform) {
       pushApplicationName: appObj.details.title,
       iosProduction: 'false',
       iosPassphrase: pushCred.password,
-      iosVariantName: variantName
-     // iosCertificate: fs.createReadStream(path.resolve(__dirname, '../fixtures/cert.p12'))
+      iosVariantName: variantName,
+      iosCertificate: fs.createReadStream(path.resolve(__dirname, '../fixtures/ios/push/p12.p12'))
     };
   }
 
@@ -104,7 +106,7 @@ function enablePush(appObj, pushCred, variantName, platform) {
 
 }
 
-function sendNotification(appObj, pushCred, message) {
+function sendNotification(appObj, message) {
 
   var headers = {
     'Accept': 'application/json',
@@ -124,14 +126,14 @@ function sendNotification(appObj, pushCred, message) {
     headers: headers,
     body: JSON.stringify(dataString),
     auth: {
-      'user': pushCred.pushApp.id,
-      'pass': pushCred.pushApp.secret
+      'user': appObj.pushCred.id,
+      'pass': appObj.pushCred.secret
     }
   };
 
   return new Promise(function(resolve, reject) {
     request(options, function(err,res,body) {
-      if (err || res.statusCode !== 200) {
+      if (err || res.statusCode !== 202) {
         return reject(err ? err : `${res.statusCode}: ${res.statusMessage}`);
       }
 
@@ -152,12 +154,10 @@ function startPush(appObj, pushCred, variantName, platform) {
             }
             throw new Error(`Error is occured while enabling new push server - "${err}"`);
           })
-          .then(pushAppInfo => {
-            pushCred.pushApp = {
-              id: pushAppInfo.pushApplicationID,
-              secret: pushAppInfo.masterSecret
-            };
-          },
+          .then(pushAppInfo => ({
+            id: pushAppInfo.pushApplicationID,
+            secret: pushAppInfo.masterSecret
+          }),
           err => {
             throw new Error(`Error is oocured while preparing UPS - "${err}"`);
           });

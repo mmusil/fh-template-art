@@ -10,7 +10,7 @@ function test() {
   });
 
   step('should send notification', function() {
-    return self.sendPushNotification();
+    return self.sendPushNotification('test');
   });
 
   it('should receive notification', function() {
