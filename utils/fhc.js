@@ -3,6 +3,7 @@
 const fh = require('fh-fhc');
 const projects = require('../fixtures/projects.json');
 const catchError = require('./catch-error');
+const async = require('./async');
 
 function init(host, username, password) {
   var cfg = {
@@ -451,25 +452,7 @@ function gitPull(projectId, appId) {
   let requestId;
 
   return request()
-    .then(waitForComplete);
-
-  function waitForComplete() {
-    return waitSec()
-      .then(getStatus)
-      .then(complete => {
-        if (!complete) {
-          return waitForComplete();
-        }
-      });
-  }
-
-  function waitSec() {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve();
-      }, 1000);
-    });
-  }
+    .then(() => async.waitFor(60 * 1000, isComplete));
 
   function request() {
     return new Promise(function(resolve, reject) {
@@ -488,7 +471,7 @@ function gitPull(projectId, appId) {
     });
   }
 
-  function getStatus() {
+  function isComplete() {
     return new Promise(function(resolve, reject) {
       fh.call({_:[
         `api/v2/logs/${requestId}`
@@ -513,26 +496,8 @@ function createProject(name, templateId) {
     .then(() => {
       console.log('Project created, waiting for all the apps to be fetched');
     })
-    .then(waitForComplete)
+    .then(() => async.waitFor(60 * 1000, isComplete))
     .then(() => project);
-
-  function waitForComplete() {
-    return waitSec()
-      .then(getStatus)
-      .then(complete => {
-        if (!complete) {
-          return waitForComplete();
-        }
-      });
-  }
-
-  function waitSec() {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve();
-      }, 1000);
-    });
-  }
 
   function request() {
     projects[templateId].title = name;
@@ -555,7 +520,7 @@ function createProject(name, templateId) {
     });
   }
 
-  function getStatus() {
+  function isComplete() {
     return new Promise(function(resolve, reject) {
       fh.call({_:[
         'api/v2/logs',

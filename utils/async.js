@@ -62,11 +62,52 @@ function retry(func, num) {
         }
       });
   }
+}
 
+function tryWithTimeout(ms, func) {
+  return new Promise((resolve, reject) => {
+    func().then(resolve, reject);
+
+    setTimeout(() => {
+      reject('Timed out');
+    }, ms);
+  });
+}
+
+function waitFor(ms, func) {
+  let duration = 0;
+
+  return waitForComplete();
+
+  function waitForComplete() {
+    return waitSec()
+      .then(func)
+      .then(complete => {
+        if (!complete) {
+          if (duration >= ms) {
+            return Promise.reject('Timed out');
+          }
+
+          return waitForComplete();
+        }
+      });
+  }
+
+  function waitSec() {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        duration += 1000;
+
+        resolve();
+      }, 1000);
+    });
+  }
 }
 
 module.exports = {
   sequence: sequence,
   find: find,
-  retry: retry
+  retry: retry,
+  tryWithTimeout: tryWithTimeout,
+  waitFor: waitFor
 };
