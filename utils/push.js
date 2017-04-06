@@ -1,7 +1,7 @@
 "use strict";
-//TODO: ADD PLATFORM ARGUMENT
 
 const config = require('../config/common.json');
+const pushCred = require('../config/credentials.json');
 const request = require('request');
 const path = require('path');
 const fs = require('fs');
@@ -60,10 +60,11 @@ function pushReadVariants(appObj, pushAppID) {
 
 }
 
-function enablePush(appObj, pushCred, variantName, platform) {
+function enablePush(appObj, variantName) {
   console.log('Enabling new push server');
 
-
+  var platform = appObj.platform;
+  var pushCredentials = pushCred[platform].push;
   var headers = {
     'x-feedhenry-appguid': `${appObj.details.guid}`,
     'Cookie': `feedhenry_v=3; feedhenry=${config.loginTokens.fhToken}; csrf=${config.loginTokens.csrf}`
@@ -72,17 +73,17 @@ function enablePush(appObj, pushCred, variantName, platform) {
   if (platform === 'android') {
     formData = {
       pushApplicationName: appObj.details.title,
-      androidGoogleKey: pushCred.serverKey,
-      androidProjectNumber: pushCred.senderId,
+      androidGoogleKey: pushCredentials.serverKey,
+      androidProjectNumber: pushCredentials.senderId,
       androidVariantName: variantName
     };
   } else {
     formData = {
       pushApplicationName: appObj.details.title,
       iosProduction: 'false',
-      iosPassphrase: pushCred.password,
+      iosPassphrase: pushCredentials.password,
       iosVariantName: variantName,
-      iosCertificate: fs.createReadStream(path.resolve(__dirname, '../fixtures/ios/push/p12.p12'))
+      iosCertificate: fs.createReadStream(path.resolve(__dirname, `../${pushCredentials.p12}`))
     };
   }
 
@@ -125,8 +126,8 @@ function sendNotification(appObj, message) {
     headers: headers,
     body: JSON.stringify(dataString),
     auth: {
-      'user': appObj.pushCred.id,
-      'pass': appObj.pushCred.secret
+      'user': appObj.pushApp.id,
+      'pass': appObj.pushApp.secret
     }
   };
 
@@ -142,14 +143,14 @@ function sendNotification(appObj, message) {
 
 }
 
-function startPush(appObj, pushCred, variantName, platform) {
+function startPush(appObj, variantName) {
   console.log('Preparing push server');
 
   return pushInit(appObj)
     .then(pushAppId => pushReadVariants(appObj, pushAppId),
           err => {
             if (err === '204: No Content') {
-              return enablePush(appObj,pushCred,variantName,platform);
+              return enablePush(appObj,variantName);
             }
             throw new Error(`Error is occured while enabling new push server - "${err}"`);
           })
