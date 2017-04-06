@@ -93,7 +93,6 @@ function enablePush(appObj, pushCred, variantName, platform) {
     formData: formData
   };
 
-
   return new Promise(function(resolve, reject) {
     request(options, function(err,res,body) {
       if (err || res.statusCode !== 200) {

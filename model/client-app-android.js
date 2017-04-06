@@ -59,6 +59,7 @@ class AndroidClientApp extends ClientApp {
         this.connection.tag
       ), config.retries)
       .then(build => {
+        console.log('');
         this.build = build;
         const buildApk = path.resolve(__dirname, '..', build[1].download.file);
         const buildId = new Date().getTime();

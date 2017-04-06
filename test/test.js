@@ -35,7 +35,7 @@ describe('Tests for client apps', function() {
       }
 
       apps.forEach(clientApp => {
-        describe(`Test for ${platform} ${type} "${clientApp.name}"`, function() {
+        describe(`Test for ${platform} - ${type} - ${clientApp.projectTemplateId} - "${clientApp.name}"`, function() {
 
           this.retries(config.retries);
 

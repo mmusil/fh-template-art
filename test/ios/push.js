@@ -13,7 +13,7 @@ function test() {
     return self.sendPushNotification('test');
   });
 
-  it('should receive notification', function() {
+  step('should receive notification', function() {
     return self.driver
       .sleep(10000)
       .elementByName('test').text().should.become('test');

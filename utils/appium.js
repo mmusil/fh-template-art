@@ -54,6 +54,8 @@ function finish(driver) {
     return driver.quit()
       .catch(console.error);
   }
+
+  return Promise.resolve();
 }
 
 function takeScreenshot(driver) {

@@ -34,7 +34,9 @@ class IOSClientApp extends ClientApp {
   }
 
   cleanup() {
-    return bfCleanup(this.buildId);
+    if (this.buildId) {
+      return bfCleanup(this.buildId);
+    }
   }
 
   prepareSAML() {

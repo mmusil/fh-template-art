@@ -33,7 +33,7 @@ function test() {
       .alertText().should.eventually.include('Success')
       .dismissAlert().sleep(1000)
       .then(() =>
-        db.isItemInDb(self, 'Users', value)
+        db.isItemInDb(self, 'Users', 'data', value)
       ).should.become(true)
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[2]/XCUIElementTypeOther[1]/XCUIElementTypeNavigationBar[1]/XCUIElementTypeButton[1]')
         .click().sleep(1000);

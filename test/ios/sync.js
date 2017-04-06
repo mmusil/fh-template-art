@@ -17,7 +17,7 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeNavigationBar[1]/XCUIElementTypeButton[1]')
         .click().sleep(2000)
       .then(() =>
-        db.isItemInDb(self, 'myShoppingList', value)
+        db.isItemInDb(self, 'myShoppingList', 'name', value)
       ).should.become(false);
   });
 
@@ -34,7 +34,7 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[1]/XCUIElementTypeStaticText[1]')
         .text().should.become(value)
       .then(() =>
-        db.isItemInDb(self, 'myShoppingList', value)
+        db.isItemInDb(self, 'myShoppingList', 'name', value)
       ).should.become(true);
   });
 
@@ -53,7 +53,7 @@ function test() {
       .elementByXPath('//XCUIElementTypeApplication[1]/XCUIElementTypeWindow[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeOther[1]/XCUIElementTypeTable[1]/XCUIElementTypeCell[1]/XCUIElementTypeStaticText[1]')
         .text().should.become(value)
       .then(() =>
-        db.isItemInDb(self, 'myShoppingList', value)
+        db.isItemInDb(self, 'myShoppingList', 'name', value)
       ).should.become(true);
   });
 

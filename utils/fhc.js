@@ -317,10 +317,9 @@ function getUserKey(username) {
 
           return resolve(key.apiKey);
         });
+      } else {
+        return resolve(key.key);
       }
-
-      return resolve(key.key);
-
     });
   });
 }

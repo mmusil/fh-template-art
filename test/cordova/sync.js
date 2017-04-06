@@ -17,7 +17,7 @@ function test() {
       .elementByCss('.ion-ios-list-outline')
         .click().sleep(2000)
       .then(() =>
-        db.isItemInDb(self, 'myShoppingList', value)
+        db.isItemInDb(self, 'myShoppingList', 'name', value)
       ).should.become(false);
   });
 
@@ -34,7 +34,7 @@ function test() {
       .elementByCss('ion-list:first-child .item-content')
         .text().should.eventually.include(value)
       .then(() =>
-        db.isItemInDb(self, 'myShoppingList', value)
+        db.isItemInDb(self, 'myShoppingList', 'name', value)
       ).should.become(true);
   });
 
@@ -53,7 +53,7 @@ function test() {
       .elementByCss('ion-list:first-child .item-content')
         .text().should.eventually.include(value)
       .then(() =>
-        db.isItemInDb(self, 'myShoppingList', value)
+        db.isItemInDb(self, 'myShoppingList', 'name', value)
       ).should.become(true);
   });
 

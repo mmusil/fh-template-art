@@ -153,12 +153,12 @@ class ClientApp {
   getCloudHostURL() {
     console.log('Reading deployed cloud app URL');
 
-    return fhc.getCloudUrl(this.cloudApp.guid, this.environment)
+    return fhc.getCloudUrl(this.cloudApp.guid, config.environment)
     .then(res=>{
       this.cloudHost = res;
     },
-    ()=>{
-      throw new Error('Can not get cloud url');
+    error => {
+      throw new Error('Can not get cloud url: ' + error);
     });
   }
 

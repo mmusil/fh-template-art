@@ -31,7 +31,7 @@ function test() {
       .elementByCss('.btn.back').click()
       .sleep(10000)
       .then(() =>
-        db.isItemInDb(self, 'Users', value)
+        db.isItemInDb(self, 'Users', 'username', value)
       ).should.become(true);
   });
 
