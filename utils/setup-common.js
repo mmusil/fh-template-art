@@ -9,7 +9,7 @@ const file = path.resolve(__dirname, '../config/common.json');
 
 program
   .version(pkg.version)
-  .option('-h, --host <host>', 'RHMAP host')
+  .option('-t, --host <host>', 'RHMAP host')
   .option('-u, --username <username>', 'RHMAP Username')
   .option('-p, --password <password>', 'RHMAP password')
   .option('-e, --environment <environment>', 'RHMAP environment')
