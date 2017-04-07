@@ -7,7 +7,6 @@ const ClientApp = require('./client-app');
 const path = require('path');
 const config = require('../config/common.json');
 const push = require('../utils/push');
-const credConfig = require('../config/credentials.json');
 const async = require('../utils/async');
 
 class AndroidClientApp extends ClientApp {
@@ -31,12 +30,14 @@ class AndroidClientApp extends ClientApp {
   }
 
   preparePush() {
-    return push.startPush(this,credConfig.android.push,'appium-android','android')
-    .then(() =>
-      this.editFile('app/google-services.json', function(file) {
+    return push.startPush(this,'appium-android')
+    .then(pushApp => {
+      this.pushApp = pushApp;
+      return this.editFile('app/google-services.json', function(file) {
         var fixtureFile = path.resolve(__dirname,'../fixtures/google-services.json');
         return fsp.copy(fixtureFile,file);
-      })
+      });
+    }
     );
   }
 
@@ -64,6 +65,9 @@ class AndroidClientApp extends ClientApp {
         const buildApk = path.resolve(__dirname, '..', build[1].download.file);
         const buildId = new Date().getTime();
         const buildsFolder = path.resolve(__dirname, `../builds`);
+        if (!fs.existsSync(buildsFolder)) {
+          fs.mkdirSync(buildsFolder);
+        }
         this.buildFile = path.resolve(buildsFolder, `${buildId}.apk`);
         fs.renameSync(buildApk, this.buildFile);
       });

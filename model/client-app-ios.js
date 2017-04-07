@@ -51,9 +51,9 @@ class IOSClientApp extends ClientApp {
     console.log('Preparing push');
 
     return this.changeBundleId()
-      .then(() => push.startPush(this,credConfig.ios.push,'ios','ios'))
-      .then(pushCred => {
-        this.pushCred = pushCred;
+      .then(() => push.startPush(this,'ios'))
+      .then(pushApp => {
+        this.pushApp = pushApp;
       });
   }
 
