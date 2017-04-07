@@ -49,7 +49,9 @@ For SAML testing:
 * start appium in separate console
 * `npm install`
 * add correct values to `config/appium.js`
-* `npm run setup common`
+* configure `config/common.js`
+  * `npm run setup common` or `npm run setup common -- -h` will show you help
+  * **You need to add `--` to send arguments directly to the setup util** 
 * `npm start`
 
 ### Running specific tests
