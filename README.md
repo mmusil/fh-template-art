@@ -21,23 +21,61 @@ For every client app it tests it will:
 ## Prerequisites
 
 * [nvm](https://github.com/creationix/nvm) - fhc requires node version: >=0.10 <= 4.4, Appium requires node version >=6
+* [Java](https://www.java.com/en/)
+* [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)
 * [Appium](http://appium.io/)
   * make sure to install it in an environment with node version >=6
-  * [installation guide for Mac](http://appium.io/slate/en/master/?ruby#running-appium-on-mac-os-x)
-  * [running Appium on real iOS devices](http://appium.io/slate/en/master/?ruby#appium-on-real-ios-devices)
-  * [Cordova on real iOS devices](http://appium.io/slate/en/master/?ruby#execution-against-a-real-ios-device)
-  * if you are still not able to run tests on real iOS devices, there can be problem with signing of WDA - open WDA project in Xcode and set your team
-* make sure to run this tool with node version >=0.10 <= 4.4
-* iOS and Android physical devices connected to your computer
+  * `npm install -g appium`
+
+For Android:
+* [Android Studio](https://developer.android.com/studio/index.html)
+* set the ANDROID_HOME environment variable to point to your Android SDK path
+* to be able to run on simulator:
+  * list available devices with `emulator -list-avds`
+  * run simulator with `emulator -avd avd_name`
 
 For iOS:
 * Mac
-* Xcode
-* certificates, keys, provisioning profiles in `fixtures` folder
-* correct values in `config/credentials.json`
+* Xcode and Xcode Command Line Developer Tools
+* iOS physical device connected to your computer
+* Apple developer account
+  * your developer certificate installed in keychain
+  * sign in to Xcode with your Apple ID
+  * wildcard provisioning profile installed in Xcode
+* [Homebrew](https://brew.sh/)
+* `npm install -g ios-deploy`
+* `brew install carthage`
+* `brew install libimobiledevice --HEAD`
 
-For iOS push testing:
-* Apple Developer Program account
+## Installation and configuration
+
+* clone this repo
+* `npm install`
+  * make sure to install it in an environment with node version >=0.10 <= 4.4
+* configure `config/common.json` to target RHMAP you want to test against
+  * `npm run setup common -- -t <host> -u <user> -p <password> -e <environment> -f app-art-<your_name>-`
+
+For Android:
+* configure `config/appium.js`
+  * set `android.platformVersion` to the version of Android on device you want to test with
+
+For iOS:
+* configure `config/appium.js`
+  * set `ios.udid` to the udid of iOS device connected to your computer (you can find it with `instruments -s devices`)
+  * set `ios.xcodeOrgId` to your Apple TeamID
+* copy your key, certificate and debug provisioning profile (you can use [those](https://github.com/fheng/help/blob/master/developer_guides/clientsdk/7.buildfarm_ios_certificates.md#ios-wildcard-certificates-for-debug)) into `fixtures/ios` folder
+* configure `config/credentials.json`
+  * set fields under `ios` to point to the files you just copied and set password for your private key file
+* after every test for iOS app, tool tries to connect to build farm and deletes the build from it, for this to work:
+  * connect to iOS digger and add your public key to authorized keys
+  * copy your private key to `fixtures`
+  * configure `config/buildfarm.json`
+
+For push testing:
+* iOS:
+  * copy your push key, certificate, debug provisioning profile and p12 for enabling UPS into `fixtures/ios/push` folder
+  * configure `config/credentials.json`
+    * set fields under `ios.push` to point to the files you just copied and set password for your private key file
 
 For SAML testing:
 * [running SAML service](https://github.com/fheng/help/blob/master/developer_guides/clientsdk/5.clientsdk_templates.md)
@@ -46,17 +84,12 @@ For SAML testing:
 
 ## Running the tests
 
-* start appium in separate console
-* `npm install`
-* add correct values to `config/appium.js`
-* configure `config/common.js`
-  * `npm run setup common` or `npm run setup common -- -h` will show you help
-  * **You need to add `--` to send arguments directly to the setup util** 
-* `npm start`
+* start appium in separate console (with node version >=6)
+* `npm start` (with node version >=0.10 <= 4.4)
 
 ### Running specific tests
 
-To specify which client apps to test, use `npm run setup test` before `npm start`.
+To specify which client apps to test, use `npm run setup test -- -l <android|ios|all> -t <native|cordova|light|all> -m <welcome|helloworld|push|saml|sync|all> -i <objc|swift|all>` before `npm start`.
 
 ## Troubleshooting
 
