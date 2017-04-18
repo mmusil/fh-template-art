@@ -9,7 +9,8 @@ const clientApps = {
       new AndroidClientApp('hello_world_project', 'Helloworld Native Android Gradle App', require('./test/android/helloworld')),
       new AndroidClientApp('welcome_project', 'Welcome Project Android Gradle', require('./test/android/welcome')),
       new AndroidClientApp('pushstarter_project', 'Simple Android Push App', require('./test/android/pushstarter')),
-      new AndroidClientApp('sync_project', 'Sync Android App', require('./test/android/sync'))
+      new AndroidClientApp('sync_project', 'Sync Android App', require('./test/android/sync')),
+      new AndroidClientApp('saml_project', 'SAML Android', require('./test/android/saml'))
     ],
     cordova: [
       new AndroidClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), 'client_advanced_hybrid'),
