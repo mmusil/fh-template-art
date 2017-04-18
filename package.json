@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Red Hat Mobile Aplication platform - Client Apps Acceptance & Regression Tests",
   "scripts": {
-    "start": "mocha --require mocha-steps",
+    "start": "npm run cleanup && mocha --require mocha-steps",
     "setup": "node utils/setup.js",
     "cleanup": "node utils/cleanup.js",
     "eslint": "eslint **/*.js"

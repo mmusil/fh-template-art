@@ -8,6 +8,8 @@ const path = require('path');
 const credConfig = require('../config/credentials.json');
 const databrowser = require('../utils/databrowser');
 const push = require('../utils/push');
+const fs = require('fs');
+const request = require('request');
 
 class ClientApp {
 
@@ -32,6 +34,8 @@ class ClientApp {
     this.prepareConnection = this.prepareConnection.bind(this);
     this.getUserDetails = this.getUserDetails.bind(this);
     this.getCloudHostURL = this.getCloudHostURL.bind(this);
+    this.prepareBuild = this.prepareBuild.bind(this);
+    this.downloadBuild = this.downloadBuild.bind(this);
   }
 
   prepareCredBundle() {
@@ -159,6 +163,39 @@ class ClientApp {
     },
     error => {
       throw new Error('Can not get cloud url: ' + error);
+    });
+  }
+
+  prepareBuild() {
+    console.log('Preparing build');
+
+    return fhc.artifacts(this.project.guid, this.details.guid)
+      .then(artifacts => artifacts.filter(artifact =>
+        artifact.destination === this.platform &&
+        artifact.env === config.environment &&
+        artifact.status === 'finished' &&
+        artifact.type === this.buildType
+      ))
+      .then(builds => {
+        if (builds.length > 0) {
+          return this.downloadBuild(builds[0]);
+        } else {
+          return this.build();
+        }
+      })
+      .then(this.prepareBuildFile);
+  }
+
+  downloadBuild(build) {
+    console.log('Downloading build');
+
+    return new Promise((resolve, reject) => {
+      const buildId = new Date().getTime();
+      const ext = this.platform === 'android' ? '.apk' : '.zip';
+      this.buildDownloadedFile = path.resolve(__dirname, `../${buildId}${ext}`);
+      const download = request(build.downloadurl).pipe(fs.createWriteStream(this.buildDownloadedFile));
+      download.on('error', reject);
+      download.on('finish', resolve);
     });
   }
 

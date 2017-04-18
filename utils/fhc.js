@@ -601,6 +601,18 @@ function createCredBundle(name, type, platform, key, cer, prov) {
   });
 }
 
+function artifacts(projectId, appId) {
+  return new Promise((resolve, reject) => {
+    fh.artifacts({_:[projectId, appId]}, function(error, builds) {
+      if (error) {
+        return reject(error);
+      }
+
+      resolve(builds);
+    });
+  });
+}
+
 module.exports = {
   init: init,
   appDeploy: appDeploy,
@@ -634,5 +646,6 @@ module.exports = {
   gitPull: gitPull,
   createProject: createProject,
   importApp: importApp,
-  createCredBundle: createCredBundle
+  createCredBundle: createCredBundle,
+  artifacts: artifacts
 };
