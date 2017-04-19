@@ -4,8 +4,6 @@
   "description": "Red Hat Mobile Aplication platform - Client Apps Acceptance & Regression Tests",
   "scripts": {
     "start": "mocha --require mocha-steps",
-    "prestart": "selenium-standalone install --config=config/selenium.js &>/dev/null && selenium-standalone start --config=config/selenium.js &>/dev/null &",
-    "poststart": "lsof -i tcp:4444 | grep LISTEN | awk '{print $2}' | xargs kill",
     "setup": "node utils/setup.js",
     "cleanup": "node utils/cleanup.js",
     "eslint": "eslint **/*.js"
@@ -25,12 +23,10 @@
     "promisify-node": "^0.4.0",
     "request": "^2.81.0",
     "rimraf": "^2.6.1",
-    "selenium-standalone": "^6.0.1",
     "simple-git": "^1.66.0",
     "ssh2": "^0.5.4",
     "underscore": "^1.8.3",
     "wd": "^1.1.3",
-    "webdriverio": "^4.6.2",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
