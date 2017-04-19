@@ -19,6 +19,7 @@ class AndroidClientApp extends ClientApp {
     this.preparePush = this.preparePush.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.build = this.build.bind(this);
+    this.prepareBuildFile = this.prepareBuildFile.bind(this);
   }
 
   cleanup() {
@@ -61,16 +62,18 @@ class AndroidClientApp extends ClientApp {
       ), config.retries)
       .then(build => {
         console.log('');
-        this.build = build;
-        const buildApk = path.resolve(__dirname, '..', build[1].download.file);
-        const buildId = new Date().getTime();
-        const buildsFolder = path.resolve(__dirname, `../builds`);
-        if (!fs.existsSync(buildsFolder)) {
-          fs.mkdirSync(buildsFolder);
-        }
-        this.buildFile = path.resolve(buildsFolder, `${buildId}.apk`);
-        fs.renameSync(buildApk, this.buildFile);
+        this.buildDownloadedFile = path.resolve(__dirname, '..', build[1].download.file);
       });
+  }
+
+  prepareBuildFile() {
+    const buildId = new Date().getTime();
+    const buildsFolder = path.resolve(__dirname, `../builds`);
+    if (!fs.existsSync(buildsFolder)) {
+      fs.mkdirSync(buildsFolder);
+    }
+    this.buildFile = path.resolve(buildsFolder, `${buildId}.apk`);
+    fs.renameSync(this.buildDownloadedFile, this.buildFile);
   }
 
 }

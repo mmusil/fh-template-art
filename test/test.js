@@ -37,14 +37,14 @@ describe('Tests for client apps', function() {
       apps.forEach(clientApp => {
         describe(`Test for ${platform} - ${type} - ${clientApp.projectTemplateId} - "${clientApp.name}"`, function() {
 
-          this.retries(config.retries);
+          this.retries(config.retries - 1);
 
           before(function() {
             const project = new Project(clientApp);
 
             return project.prepare()
               .then(clientApp.prepare)
-              .then(clientApp.build);
+              .then(clientApp.prepareBuild);
           });
 
           after(function() {

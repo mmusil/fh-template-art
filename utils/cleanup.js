@@ -31,6 +31,9 @@ function cleanup() {
     });
 }
 
-fhc.init(config.host, config.username, config.password)
-  .then(cleanup)
-  .catch(console.error);
+if (config.cleanup) {
+  console.log('Performing cleanup');
+  fhc.init(config.host, config.username, config.password)
+    .then(cleanup)
+    .catch(console.error);
+}

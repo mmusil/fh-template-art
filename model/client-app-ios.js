@@ -30,10 +30,11 @@ class IOSClientApp extends ClientApp {
     this.allowArbitraryLoadsCordova = this.allowArbitraryLoadsCordova.bind(this);
     this.createCredBundle = this.createCredBundle.bind(this);
     this.build = this.build.bind(this);
+    this.prepareBuildFile = this.prepareBuildFile.bind(this);
   }
 
   cleanup() {
-    if (this.buildId) {
+    if (this.buildId && config.cleanup) {
       return bfCleanup(this.buildId);
     }
   }
@@ -114,8 +115,6 @@ class IOSClientApp extends ClientApp {
   build() {
     console.log('Building client app');
 
-    const tempFolder = path.resolve(__dirname, '../temp');
-
     return async.retry(
       () => fhc.buildIOS(
         this.project.guid,
@@ -133,11 +132,16 @@ class IOSClientApp extends ClientApp {
       .then(build => {
         console.log('');
         this.buildId = build[0][0].cacheKey;
-        this.buildZip = path.resolve(__dirname, '..', build[1].download.file);
-      })
-      .then(() => rimraf(tempFolder))
+        this.buildDownloadedFile = path.resolve(__dirname, '..', build[1].download.file);
+      });
+  }
+
+  prepareBuildFile() {
+    const tempFolder = path.resolve(__dirname, '../temp');
+
+    return rimraf(tempFolder)
       .then(() => fs.mkdirSync(tempFolder))
-      .then(() => unzip(this.buildZip, tempFolder))
+      .then(() => unzip(this.buildDownloadedFile, tempFolder))
       .then(() => {
         const appfile = fs.readdirSync(tempFolder)[0];
         const ext = path.extname(appfile);
@@ -147,7 +151,7 @@ class IOSClientApp extends ClientApp {
         if (!fs.existsSync(buildsFolder)) {
           fs.mkdirSync(buildsFolder);
         }
-        fs.unlinkSync(this.buildZip);
+        fs.unlinkSync(this.buildDownloadedFile);
         fs.renameSync(path.resolve(tempFolder, appfile), this.buildFile);
       });
   }

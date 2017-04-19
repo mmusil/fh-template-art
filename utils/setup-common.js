@@ -15,6 +15,7 @@ program
   .option('-e, --environment <environment>', 'RHMAP environment')
   .option('-f, --prefix <prefix>', 'prefix', 'app-art-')
   .option('-r, --retries <retries>', 'number of retries', parseInt, 3)
+  .option('-c, --cleanup', 'perform cleanup')
   .parse(process.argv);
 
 if (
@@ -32,7 +33,8 @@ const settings = {
   password: program.password,
   environment: program.environment,
   prefix: program.prefix,
-  retries: program.retries
+  retries: program.retries,
+  cleanup: program.cleanup
 };
 
 fs.writeFileSync(file, JSON.stringify(settings, null, 2));

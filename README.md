@@ -53,7 +53,7 @@ For iOS:
 * `npm install`
   * make sure to install it in an environment with node version >=0.10 <= 4.4
 * configure `config/common.json` to target RHMAP you want to test against
-  * `npm run setup common -- -t <host> -u <user> -p <password> -e <environment> -f app-art-<your_name>-`
+  * `npm run setup common -- -t <host> -u <user> -p <password> -e <environment> -f app-art-<your_name>- [--cleanup]`
 
 For Android:
 * configure `config/appium.js`
