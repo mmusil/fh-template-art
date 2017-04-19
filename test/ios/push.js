@@ -4,17 +4,10 @@ function test() {
 
   const self = this;
 
-  step('should enable push', function() {
+  it('should receive notification', function() {
     return self.driver
-      .acceptAlert();
-  });
-
-  step('should send notification', function() {
-    return self.sendPushNotification('test');
-  });
-
-  step('should receive notification', function() {
-    return self.driver
+      .acceptAlert()
+      .then(() => self.sendPushNotification('test'))
       .sleep(10000)
       .elementByName('test').text().should.become('test');
   });
