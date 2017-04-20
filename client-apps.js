@@ -15,7 +15,7 @@ const clientApps = {
     cordova: [
       new AndroidClientApp('hello_world_project', 'Cordova App', require('./test/cordova/helloworld'), 'client_advanced_hybrid'),
       // new AndroidClientApp('welcome_project', 'Welcome Project-client', require('./test/cordova/welcome'), 'client_advanced_hybrid'),
-      // new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), 'client_advanced_hybrid'),
+      new AndroidClientApp('saml_project', 'SAML Client', require('./test/cordova/saml'), 'client_advanced_hybrid'),
       new AndroidClientApp('sync_project', 'Sync App', require('./test/cordova/sync'), 'client_advanced_hybrid')
     ],
     light: [
