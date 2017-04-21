@@ -19,6 +19,7 @@ const clientApps = {
       new AndroidClientApp('sync_project', 'Sync App', require('./test/cordova/sync'), 'client_advanced_hybrid')
     ],
     light: [
+      new AndroidClientApp('welcome_project', 'Light', require('./test/cordova/welcome'), 'client_hybrid', 'https://github.com/feedhenry-templates/welcome-app', 'FH-v3.13.1')
     ]
   },
   ios: {
